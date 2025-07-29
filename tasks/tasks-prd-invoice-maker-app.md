@@ -82,14 +82,14 @@ Based on the PRD analysis and current state assessment (greenfield project), her
 ## Tasks
 
 - [ ] 1.0 Project Setup & Architecture Foundation
-  - [ ] 1.1 Create new Xcode project with iOS and macOS targets using SwiftUI
-  - [ ] 1.2 Configure project settings, bundle identifiers, and deployment targets
-  - [ ] 1.3 Set up workspace with Swift Package Manager dependencies
-  - [ ] 1.4 Implement basic MVVM architecture structure with Combine
-  - [ ] 1.5 Create app entry point and root navigation structure
-  - [ ] 1.6 Configure build schemes for Debug/Release configurations
-  - [ ] 1.7 Set up basic folder structure for Models, Views, ViewModels, Services
-  - [ ] 1.8 Initialize Git repository and create initial commit
+  - [x] 1.1 Create new Xcode project with iOS and macOS targets using SwiftUI
+  - [x] 1.2 Configure project settings, bundle identifiers, and deployment targets
+  - [x] 1.3 Set up workspace with Swift Package Manager dependencies
+  - [x] 1.4 Implement basic MVVM architecture structure with Combine
+  - [x] 1.5 Create app entry point and root navigation structure
+  - [x] 1.6 Configure build schemes for Debug/Release configurations
+  - [x] 1.7 Set up basic folder structure for Models, Views, ViewModels, Services
+  - [x] 1.8 Initialize Git repository and create initial commit
 
 - [ ] 2.0 Core Data Models & Database Layer
   - [ ] 2.1 Design and implement Core Data model (.xcdatamodeld) with all entities
