@@ -11,11 +11,14 @@ public struct BusinessProfile: Sendable, Identifiable {
     public var logo: Data?
     public var signature: Data?
     public var taxId: String?
+    public var registrationNumber: String?
     public var invoiceNumberPrefix: String
     public var nextInvoiceNumber: Int
     public var defaultTaxRate: Decimal
     public var currency: Currency
     public var paymentTerms: PaymentTerms
+    public var createdAt: Date
+    public var updatedAt: Date
     
     public init(
         id: UUID = UUID(),
@@ -28,6 +31,7 @@ public struct BusinessProfile: Sendable, Identifiable {
         logo: Data? = nil,
         signature: Data? = nil,
         taxId: String? = nil,
+        registrationNumber: String? = nil,
         invoiceNumberPrefix: String = "INV",
         nextInvoiceNumber: Int = 1,
         defaultTaxRate: Decimal = 0,
@@ -44,11 +48,39 @@ public struct BusinessProfile: Sendable, Identifiable {
         self.logo = logo
         self.signature = signature
         self.taxId = taxId
+        self.registrationNumber = registrationNumber
         self.invoiceNumberPrefix = invoiceNumberPrefix
         self.nextInvoiceNumber = nextInvoiceNumber
         self.defaultTaxRate = defaultTaxRate
         self.currency = currency
         self.paymentTerms = paymentTerms
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+    
+    public init(from entity: BusinessProfileEntity) {
+        self.id = entity.id
+        self.businessName = entity.businessName
+        self.ownerName = entity.ownerName
+        self.email = entity.email
+        self.phone = entity.phone
+        self.website = entity.website
+        self.address = entity.address != nil ? Address(from: entity.address!) : nil
+        self.logo = entity.logoData
+        self.signature = entity.signatureData
+        self.taxId = entity.taxNumber
+        self.registrationNumber = entity.registrationNumber
+        self.invoiceNumberPrefix = entity.invoicePrefix
+        self.nextInvoiceNumber = entity.nextInvoiceNumber
+        self.defaultTaxRate = entity.taxRate
+        self.currency = Currency(rawValue: entity.defaultCurrency) ?? .usd
+        self.paymentTerms = PaymentTerms(rawValue: entity.defaultPaymentTerms ?? "net30") ?? .net30
+        self.createdAt = entity.createdAt
+        self.updatedAt = entity.updatedAt
+    }
+    
+    public func generateNextInvoiceNumber() -> String {
+        return "\(invoiceNumberPrefix)-\(String(format: "%04d", nextInvoiceNumber))"
     }
 }
 

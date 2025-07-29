@@ -81,7 +81,7 @@ Based on the PRD analysis and current state assessment (greenfield project), her
 
 ## Tasks
 
-- [ ] 1.0 Project Setup & Architecture Foundation
+- [x] 1.0 Project Setup & Architecture Foundation
   - [x] 1.1 Create new Xcode project with iOS and macOS targets using SwiftUI
   - [x] 1.2 Configure project settings, bundle identifiers, and deployment targets
   - [x] 1.3 Set up workspace with Swift Package Manager dependencies
@@ -91,17 +91,17 @@ Based on the PRD analysis and current state assessment (greenfield project), her
   - [x] 1.7 Set up basic folder structure for Models, Views, ViewModels, Services
   - [x] 1.8 Initialize Git repository and create initial commit
 
-- [ ] 2.0 Core Data Models & Database Layer
-  - [ ] 2.1 Design and implement Core Data model (.xcdatamodeld) with all entities
-  - [ ] 2.2 Create Invoice model with relationships to items and clients
-  - [ ] 2.3 Create Client model with contact information properties
-  - [ ] 2.4 Create BusinessProfile model for user business information
-  - [ ] 2.5 Create InvoiceItem model for line items with pricing
-  - [ ] 2.6 Create InvoiceTemplate model for template configurations
-  - [ ] 2.7 Implement CoreDataStack service with persistence container
-  - [ ] 2.8 Add Core Data CRUD operations for all models
-  - [ ] 2.9 Implement data validation and error handling
-  - [ ] 2.10 Create unit tests for all data models and Core Data operations
+- [x] 2.0 Core Data Models & Database Layer
+  - [x] 2.1 Design and implement Core Data model (.xcdatamodeld) with all entities
+  - [x] 2.2 Create Invoice model with relationships to items and clients
+  - [x] 2.3 Create Client model with contact information properties
+  - [x] 2.4 Create BusinessProfile model for user business information
+  - [x] 2.5 Create InvoiceItem model for line items with pricing
+  - [x] 2.6 Create InvoiceTemplate model for template configurations
+  - [x] 2.7 Implement CoreDataStack service with persistence container
+  - [x] 2.8 Add Core Data CRUD operations for all models
+  - [x] 2.9 Implement data validation and error handling
+  - [x] 2.10 Create unit tests for all data models and Core Data operations
 
 - [ ] 3.0 Authentication & User Management System
   - [ ] 3.1 Implement AuthenticationService with multiple sign-in options
