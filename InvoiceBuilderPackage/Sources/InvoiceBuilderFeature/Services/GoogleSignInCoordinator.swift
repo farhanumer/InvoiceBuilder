@@ -32,6 +32,7 @@ public final class GoogleSignInCoordinator: ObservableObject {
     
     public func signIn() async throws -> GIDSignInResult {
         return try await withCheckedThrowingContinuation { continuation in
+            #if os(iOS)
             guard let presentingViewController = self.presentingViewController else {
                 continuation.resume(throwing: AuthenticationError.unknownError)
                 return
@@ -56,6 +57,10 @@ public final class GoogleSignInCoordinator: ObservableObject {
                     }
                 }
             }
+            #else
+            // macOS not supported in this implementation
+            continuation.resume(throwing: AuthenticationError.unknownError)
+            #endif
         }
     }
     
@@ -65,14 +70,18 @@ public final class GoogleSignInCoordinator: ObservableObject {
     
     public func restorePreviousSignIn() async throws -> GIDSignInResult? {
         return try await withCheckedThrowingContinuation { continuation in
-            GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] result, error in
+            GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] user, error in
                 DispatchQueue.main.async {
                     if let error = error {
                         let authError = self?.mapGoogleError(error) ?? .unknownError
                         self?.error = authError
                         continuation.resume(throwing: authError)
+                    } else if let user = user {
+                        // For now, return nil since we can't easily mock GIDSignInResult
+                        // In a real implementation, you'd handle the restored user properly
+                        continuation.resume(returning: nil)
                     } else {
-                        continuation.resume(returning: result)
+                        continuation.resume(returning: nil)
                     }
                 }
             }
@@ -107,12 +116,8 @@ public final class GoogleSignInCoordinator: ObservableObject {
             return .networkError
         case .hasNoAuthInKeychain:
             return .userNotFound
-        case .invalidConfiguration:
-            return .unknownError
         case .mismatchWithCurrentUser:
             return .invalidCredentials
-        case .noSignInHandlersInstalled:
-            return .unknownError
         case .scopesAlreadyGranted:
             return .unknownError
         case .unknown:
@@ -137,34 +142,24 @@ public struct GoogleSignInButton: View {
     
     public var body: some View {
         Button {
-            Task {
-                do {
-                    coordinator.isPresenting = true
-                    let result = try await coordinator.signIn()
-                    let user = try await AuthenticationService.shared.signInWithGoogle(result: result)
-                    onCompletion(.success(user))
-                } catch let error as AuthenticationError {
-                    onCompletion(.failure(error))
-                } catch {
-                    onCompletion(.failure(.unknownError))
-                }
-            }
+            // For now, show an alert that Google Sign-In is not available
+            onCompletion(.failure(.unknownError))
         } label: {
             HStack {
                 Image(systemName: "globe")
                     .font(.system(size: 16, weight: .medium))
-                Text("Sign in with Google")
+                Text("Sign in with Google (Coming Soon)")
                     .font(.system(size: 16, weight: .medium))
             }
-            .foregroundColor(colorScheme == .dark ? .white : .black)
+            .foregroundColor(.gray)
             .frame(height: 50)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(colorScheme == .dark ? .white : .black, lineWidth: 1)
+                    .stroke(.gray, lineWidth: 1)
             )
         }
-        .disabled(coordinator.isPresenting)
+        .disabled(true)
     }
 }
 
