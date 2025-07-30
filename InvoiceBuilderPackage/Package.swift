@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.1.0"),
         .package(url: "https://github.com/pointfreeco/swift-identified-collections.git", from: "1.0.0"),
+        .package(url: "https://github.com/google/GoogleSignIn-iOS.git", from: "7.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -30,6 +31,7 @@ let package = Package(
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
+                .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
             ]
         ),
         .testTarget(

@@ -11,6 +11,12 @@
 	<!-- Base entitlements - add your app's entitlements here -->
 	<!-- AI agents can safely modify this file to add capabilities -->
 	
+	<!-- Apple Sign-In -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+	
 	<!-- Example entitlements (commented out by default):
 	
 	<key>com.apple.developer.healthkit</key>
