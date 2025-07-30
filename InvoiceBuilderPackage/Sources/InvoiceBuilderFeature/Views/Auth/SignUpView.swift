@@ -166,7 +166,9 @@ public struct SignUpView: View {
                 .padding(.horizontal, 24)
             }
             .navigationTitle("Sign Up")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

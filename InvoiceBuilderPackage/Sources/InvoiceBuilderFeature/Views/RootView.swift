@@ -48,78 +48,104 @@ struct MainTabView: View {
     }
 }
 
-// Placeholder views for the main navigation
-struct DashboardView: View {
-    var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Dashboard")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                Text("Welcome to Invoice Builder")
-                    .foregroundStyle(.secondary)
-            }
-            .navigationTitle("Dashboard")
-        }
-    }
-}
+// Main navigation views using actual implementations
 
 struct InvoicesView: View {
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Invoices")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                Text("Manage your invoices")
-                    .foregroundStyle(.secondary)
-            }
-            .navigationTitle("Invoices")
-        }
+        InvoiceListView()
     }
 }
 
 struct ClientsView: View {
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Clients")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                Text("Manage your clients")
-                    .foregroundStyle(.secondary)
-            }
-            .navigationTitle("Clients")
-        }
+        ClientListView()
     }
 }
 
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
+    @State private var showingBusinessProfile = false
+    @State private var showingServiceItems = false
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                Text("Settings")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                if let user = appState.currentUser {
-                    VStack {
-                        Text("Signed in as:")
-                        Text(user.name)
-                            .fontWeight(.semibold)
-                        Text(user.email)
-                            .foregroundStyle(.secondary)
+            List {
+                Section("Business") {
+                    Button {
+                        showingBusinessProfile = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "building.2.fill")
+                                .foregroundStyle(.blue)
+                                .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Business Profile")
+                                    .foregroundStyle(.primary)
+                                Text("Manage your business information")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    
+                    Button {
+                        showingServiceItems = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "list.clipboard.fill")
+                                .foregroundStyle(.green)
+                                .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Service Items")
+                                    .foregroundStyle(.primary)
+                                Text("Manage your reusable service items")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                 }
                 
-                Button("Sign Out") {
-                    appState.signOut()
+                Section("Account") {
+                    if let user = appState.currentUser {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Signed in as:")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(user.name)
+                                .fontWeight(.semibold)
+                            Text(user.email)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    
+                    Button("Sign Out", role: .destructive) {
+                        appState.signOut()
+                    }
                 }
-                .buttonStyle(.borderedProminent)
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showingBusinessProfile) {
+                BusinessProfileView()
+            }
+            .sheet(isPresented: $showingServiceItems) {
+                ItemsListView()
+            }
         }
     }
 }
@@ -173,34 +199,7 @@ struct AuthenticationView: View {
     }
 }
 
-struct OnboardingView: View {
-    @Environment(AppState.self) private var appState
-    
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 30) {
-                Text("Welcome to Invoice Builder!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                
-                VStack(spacing: 20) {
-                    FeatureRow(icon: "doc.text.fill", title: "Create Invoices", description: "Professional templates in minutes")
-                    FeatureRow(icon: "person.2.fill", title: "Manage Clients", description: "Keep track of all your customers")
-                    FeatureRow(icon: "chart.bar.fill", title: "Track Revenue", description: "Monitor your business growth")
-                }
-                
-                Button("Complete Setup") {
-                    appState.completeOnboarding()
-                }
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
-            }
-            .padding()
-            .navigationTitle("Getting Started")
-        }
-    }
-}
+// OnboardingView moved to Views/Onboarding/OnboardingView.swift
 
 struct FeatureRow: View {
     let icon: String

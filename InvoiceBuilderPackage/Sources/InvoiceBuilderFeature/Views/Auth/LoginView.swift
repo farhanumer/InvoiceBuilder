@@ -98,7 +98,9 @@ public struct LoginView: View {
                 .padding(.horizontal, 24)
             }
             .navigationTitle("")
+            #if os(iOS)
             .navigationBarHidden(true)
+            #endif
         }
         .overlay {
             if authService.isLoading {
@@ -242,25 +244,6 @@ public struct LoginView: View {
 
 // MARK: - Supporting Views
 
-struct LoadingOverlay: View {
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.3)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 16) {
-                ProgressView()
-                    .scaleEffect(1.2)
-                
-                Text("Signing in...")
-                    .font(.headline)
-            }
-            .padding(24)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-        }
-    }
-}
-
 struct PhoneVerificationView: View {
     let phoneNumber: String
     let onCodeEntered: (String) -> Void
@@ -310,7 +293,9 @@ struct PhoneVerificationView: View {
             }
             .padding(.horizontal, 24)
             .navigationTitle("Verification")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
