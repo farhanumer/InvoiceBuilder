@@ -23,8 +23,12 @@ public final class BusinessProfileEntity {
     public var updatedAt: Date
     
     // Relationships
-    @Relationship(inverse: \InvoiceEntity.businessProfile) public var invoices: [InvoiceEntity]
-    @Relationship(inverse: \InvoiceTemplateEntity.businessProfile) public var templates: [InvoiceTemplateEntity]
+    @Relationship(deleteRule: .cascade) 
+    public var invoices: [InvoiceEntity] = []
+    @Relationship(deleteRule: .cascade) 
+    public var templates: [InvoiceTemplateEntity] = []
+    @Relationship(deleteRule: .cascade) 
+    public var serviceItems: [ServiceItemEntity] = []
     
     public init(
         id: UUID = UUID(),
@@ -62,7 +66,5 @@ public final class BusinessProfileEntity {
         self.taxRate = taxRate
         self.createdAt = Date()
         self.updatedAt = Date()
-        self.invoices = []
-        self.templates = []
     }
 }

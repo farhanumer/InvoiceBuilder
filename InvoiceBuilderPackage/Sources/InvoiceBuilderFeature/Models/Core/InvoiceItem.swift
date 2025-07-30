@@ -81,7 +81,11 @@ public struct ServiceItem: Sendable, Identifiable {
     public var description: String?
     public var defaultRate: Decimal
     public var category: String?
+    public var iconName: String?
     public var isActive: Bool
+    public var createdAt: Date
+    public var updatedAt: Date
+    public var sortOrder: Int
     
     public init(
         id: UUID = UUID(),
@@ -89,13 +93,43 @@ public struct ServiceItem: Sendable, Identifiable {
         description: String? = nil,
         defaultRate: Decimal,
         category: String? = nil,
-        isActive: Bool = true
+        iconName: String? = nil,
+        isActive: Bool = true,
+        sortOrder: Int = 0
     ) {
         self.id = id
         self.name = name
         self.description = description
         self.defaultRate = defaultRate
         self.category = category
+        self.iconName = iconName
         self.isActive = isActive
+        self.sortOrder = sortOrder
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+    
+    public init(from entity: ServiceItemEntity) {
+        self.id = entity.id
+        self.name = entity.name
+        self.description = entity.itemDescription
+        self.defaultRate = entity.defaultRate
+        self.category = entity.category
+        self.iconName = entity.iconName
+        self.isActive = entity.isActive
+        self.createdAt = entity.createdAt
+        self.updatedAt = entity.updatedAt
+        self.sortOrder = entity.sortOrder
+    }
+    
+    public func toInvoiceItem(quantity: Decimal = 1) -> InvoiceItem {
+        return InvoiceItem(
+            name: name,
+            description: description ?? "",
+            quantity: quantity,
+            rate: defaultRate,
+            category: category,
+            sortOrder: sortOrder
+        )
     }
 }

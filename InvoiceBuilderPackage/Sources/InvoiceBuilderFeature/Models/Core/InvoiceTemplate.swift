@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 public struct InvoiceTemplate: Sendable, Identifiable {
     public let id: UUID
@@ -149,3 +150,342 @@ public enum FooterLayout: String, CaseIterable, Sendable {
         }
     }
 }
+
+// MARK: - Built-in Templates
+
+extension InvoiceTemplate {
+    public static let builtInTemplates: [InvoiceTemplate] = [
+        // Professional Templates
+        .classic,
+        .modern,
+        .executive,
+        .corporate,
+        
+        // Creative Templates
+        .creative,
+        .colorful,
+        .artistic,
+        
+        // Minimal Templates
+        .minimal,
+        .clean,
+        .simple,
+        
+        // Service Templates
+        .consulting,
+        .freelancer,
+        .agency,
+        
+        // Product Templates
+        .retail,
+        .ecommerce,
+        .wholesale
+    ]
+    
+    // Classic Professional Template
+    public static let classic = InvoiceTemplate(
+        name: "classic",
+        displayName: "Classic",
+        templateDescription: "A timeless professional invoice template",
+        isDefault: true,
+        primaryColor: "#2563EB",
+        secondaryColor: "#64748B",
+        accentColor: "#0F172A",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .standard
+    )
+    
+    // Modern Professional Template
+    public static let modern = InvoiceTemplate(
+        name: "modern",
+        displayName: "Modern",
+        templateDescription: "Clean and contemporary design",
+        primaryColor: "#059669",
+        secondaryColor: "#6B7280",
+        accentColor: "#111827",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topRight,
+        headerLayout: .modern,
+        footerLayout: .minimal
+    )
+    
+    // Executive Template
+    public static let executive = InvoiceTemplate(
+        name: "executive",
+        displayName: "Executive",
+        templateDescription: "Sophisticated design for high-end businesses",
+        primaryColor: "#1F2937",
+        secondaryColor: "#374151",
+        accentColor: "#DC2626",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topCenter,
+        headerLayout: .detailed,
+        footerLayout: .detailed
+    )
+    
+    // Corporate Template
+    public static let corporate = InvoiceTemplate(
+        name: "corporate",
+        displayName: "Corporate",
+        templateDescription: "Traditional corporate styling",
+        primaryColor: "#1E40AF",
+        secondaryColor: "#475569",
+        accentColor: "#0F172A",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .detailed,
+        showTaxColumn: true,
+        showDiscountColumn: true
+    )
+    
+    // Creative Template
+    public static let creative = InvoiceTemplate(
+        name: "creative",
+        displayName: "Creative",
+        templateDescription: "Vibrant and artistic design",
+        primaryColor: "#7C3AED",
+        secondaryColor: "#A78BFA",
+        accentColor: "#EC4899",
+        fontFamily: "System",
+        fontSize: 13,
+        logoPosition: .topCenter,
+        headerLayout: .modern,
+        footerLayout: .minimal
+    )
+    
+    // Colorful Template
+    public static let colorful = InvoiceTemplate(
+        name: "colorful",
+        displayName: "Colorful",
+        templateDescription: "Bright and energetic design",
+        primaryColor: "#EF4444",
+        secondaryColor: "#F97316",
+        accentColor: "#EAB308",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .modern,
+        footerLayout: .standard
+    )
+    
+    // Artistic Template
+    public static let artistic = InvoiceTemplate(
+        name: "artistic",
+        displayName: "Artistic",
+        templateDescription: "Unique and expressive design",
+        primaryColor: "#06B6D4",
+        secondaryColor: "#0891B2",
+        accentColor: "#BE185D",
+        fontFamily: "System",
+        fontSize: 13,
+        logoPosition: .topRight,
+        headerLayout: .minimal,
+        footerLayout: .signature
+    )
+    
+    // Minimal Template
+    public static let minimal = InvoiceTemplate(
+        name: "minimal",
+        displayName: "Minimal",
+        templateDescription: "Clean and uncluttered design",
+        primaryColor: "#000000",
+        secondaryColor: "#6B7280",
+        accentColor: "#374151",
+        fontFamily: "System",
+        fontSize: 11,
+        logoPosition: .topLeft,
+        headerLayout: .minimal,
+        footerLayout: .minimal,
+        showTaxColumn: false,
+        showDiscountColumn: false
+    )
+    
+    // Clean Template
+    public static let clean = InvoiceTemplate(
+        name: "clean",
+        displayName: "Clean",
+        templateDescription: "Simple and organized layout",
+        primaryColor: "#374151",
+        secondaryColor: "#9CA3AF",
+        accentColor: "#111827",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .standard
+    )
+    
+    // Simple Template
+    public static let simple = InvoiceTemplate(
+        name: "simple",
+        displayName: "Simple",
+        templateDescription: "Straightforward and efficient",
+        primaryColor: "#4B5563",
+        secondaryColor: "#6B7280",
+        accentColor: "#1F2937",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .standard
+    )
+    
+    // Consulting Template
+    public static let consulting = InvoiceTemplate(
+        name: "consulting",
+        displayName: "Consulting",
+        templateDescription: "Professional service-focused design",
+        primaryColor: "#0F766E",
+        secondaryColor: "#14B8A6",
+        accentColor: "#134E4A",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topRight,
+        headerLayout: .modern,
+        footerLayout: .detailed
+    )
+    
+    // Freelancer Template
+    public static let freelancer = InvoiceTemplate(
+        name: "freelancer",
+        displayName: "Freelancer",
+        templateDescription: "Perfect for independent professionals",
+        primaryColor: "#7C2D12",
+        secondaryColor: "#EA580C",
+        accentColor: "#431407",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .signature
+    )
+    
+    // Agency Template
+    public static let agency = InvoiceTemplate(
+        name: "agency",
+        displayName: "Agency",
+        templateDescription: "Modern design for creative agencies",
+        primaryColor: "#5B21B6",
+        secondaryColor: "#8B5CF6",
+        accentColor: "#3730A3",
+        fontFamily: "System",
+        fontSize: 13,
+        logoPosition: .topCenter,
+        headerLayout: .modern,
+        footerLayout: .minimal
+    )
+    
+    // Retail Template
+    public static let retail = InvoiceTemplate(
+        name: "retail",
+        displayName: "Retail",
+        templateDescription: "Designed for retail businesses",
+        primaryColor: "#DC2626",
+        secondaryColor: "#F87171",
+        accentColor: "#991B1B",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .standard,
+        showTaxColumn: true,
+        showDiscountColumn: true
+    )
+    
+    // E-commerce Template
+    public static let ecommerce = InvoiceTemplate(
+        name: "ecommerce",
+        displayName: "E-commerce",
+        templateDescription: "Modern online store styling",
+        primaryColor: "#059669",
+        secondaryColor: "#10B981",
+        accentColor: "#065F46",
+        fontFamily: "System",
+        fontSize: 12,
+        logoPosition: .topRight,
+        headerLayout: .modern,
+        footerLayout: .detailed,
+        showTaxColumn: true,
+        showDiscountColumn: true
+    )
+    
+    // Wholesale Template
+    public static let wholesale = InvoiceTemplate(
+        name: "wholesale",
+        displayName: "Wholesale",
+        templateDescription: "B2B focused design",
+        primaryColor: "#1F2937",
+        secondaryColor: "#4B5563",
+        accentColor: "#111827",
+        fontFamily: "System",
+        fontSize: 11,
+        logoPosition: .topLeft,
+        headerLayout: .standard,
+        footerLayout: .detailed,
+        showTaxColumn: true,
+        showDiscountColumn: true
+    )
+}
+
+// MARK: - Template Categories
+
+public enum TemplateCategory: String, CaseIterable, Sendable {
+    case all = "all"
+    case professional = "professional"
+    case creative = "creative"
+    case minimal = "minimal"
+    case service = "service"
+    case product = "product"
+    
+    public var displayName: String {
+        switch self {
+        case .all: return "All Templates"
+        case .professional: return "Professional"
+        case .creative: return "Creative"
+        case .minimal: return "Minimal"
+        case .service: return "Service"
+        case .product: return "Product"
+        }
+    }
+    
+    public func templates() -> [InvoiceTemplate] {
+        switch self {
+        case .all:
+            return InvoiceTemplate.builtInTemplates
+        case .professional:
+            return [.classic, .modern, .executive, .corporate]
+        case .creative:
+            return [.creative, .colorful, .artistic]
+        case .minimal:
+            return [.minimal, .clean, .simple]
+        case .service:
+            return [.consulting, .freelancer, .agency]
+        case .product:
+            return [.retail, .ecommerce, .wholesale]
+        }
+    }
+}
+
+// MARK: - Color Utilities
+
+extension InvoiceTemplate {
+    public func primaryColorSwiftUI() -> Color {
+        return Color(hex: primaryColor) ?? .blue
+    }
+    
+    public func secondaryColorSwiftUI() -> Color {
+        return Color(hex: secondaryColor) ?? .gray
+    }
+    
+    public func accentColorSwiftUI() -> Color {
+        return Color(hex: accentColor) ?? .black
+    }
+}
+

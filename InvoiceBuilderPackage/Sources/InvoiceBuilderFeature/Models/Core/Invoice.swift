@@ -19,6 +19,47 @@ public struct Invoice: Sendable, Identifiable {
     public let createdAt: Date
     public var updatedAt: Date
     
+    // Computed properties
+    public var isOverdue: Bool {
+        status == .sent && dueDate < Date()
+    }
+    
+    public var daysPastDue: Int {
+        guard isOverdue else { return 0 }
+        return Calendar.current.dateComponents([.day], from: dueDate, to: Date()).day ?? 0
+    }
+    
+    public var formattedTotal: String {
+        formatCurrency(total)
+    }
+    
+    public var formattedSubtotal: String {
+        formatCurrency(subtotal)
+    }
+    
+    public var formattedTaxAmount: String {
+        formatCurrency(taxAmount)
+    }
+    
+    public var discountAmount: Decimal {
+        items.reduce(0) { $0 + $1.discountAmount }
+    }
+    
+    public var formattedDiscountAmount: String {
+        formatCurrency(discountAmount)
+    }
+    
+    public var paymentTerms: String? {
+        terms
+    }
+    
+    private func formatCurrency(_ amount: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency.rawValue
+        return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
+    }
+    
     public init(
         id: UUID = UUID(),
         invoiceNumber: String,
@@ -74,6 +115,50 @@ public struct Invoice: Sendable, Identifiable {
         self.taxAmount = entity.taxAmount
         self.total = entity.totalAmount
         self.taxRate = entity.taxAmount > 0 ? (entity.taxAmount / entity.subtotal) : 0
+    }
+    
+    // MARK: - Methods
+    
+    public mutating func updateStatus(_ newStatus: InvoiceStatus) {
+        status = newStatus
+        updatedAt = Date()
+    }
+    
+    public mutating func addItem(_ item: InvoiceItem) {
+        items.append(item)
+        recalculateTotals()
+    }
+    
+    public mutating func removeItem(at index: Int) {
+        guard index < items.count else { return }
+        items.remove(at: index)
+        recalculateTotals()
+    }
+    
+    public mutating func recalculateTotals() {
+        subtotal = items.reduce(0) { $0 + $1.total }
+        taxAmount = subtotal * taxRate
+        total = subtotal + taxAmount - discountAmount
+        updatedAt = Date()
+    }
+    
+    public func toEntity() -> InvoiceEntity {
+        let entity = InvoiceEntity(
+            id: id,
+            number: invoiceNumber,
+            issueDate: date,
+            dueDate: dueDate,
+            status: status.rawValue,
+            currency: currency.rawValue,
+            subtotal: subtotal,
+            taxAmount: taxAmount,
+            discountAmount: discountAmount,
+            totalAmount: total,
+            notes: notes,
+            poNumber: poNumber,
+            terms: terms
+        )
+        return entity
     }
 }
 
