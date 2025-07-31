@@ -17,6 +17,29 @@
 		<string>Default</string>
 	</array>
 	
+	<!-- CloudKit Services -->
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudKit</string>
+	</array>
+	
+	<!-- CloudKit Containers -->
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.com.invoicebuilder.app</string>
+	</array>
+	
+	<!-- Push Notifications -->
+	<key>aps-environment</key>
+	<string>development</string>
+	
+	<!-- Background App Refresh for Sync -->
+	<key>com.apple.developer.background-modes</key>
+	<array>
+		<string>background-processing</string>
+		<string>remote-notification</string>
+	</array>
+	
 	<!-- Example entitlements (commented out by default):
 	
 	<key>com.apple.developer.healthkit</key>
