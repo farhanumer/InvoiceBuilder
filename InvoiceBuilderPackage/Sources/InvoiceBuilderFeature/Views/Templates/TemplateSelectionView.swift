@@ -131,9 +131,17 @@ public struct TemplateSelectionView: View {
             .sheet(isPresented: $showingCreateTemplate) {
                 Text("Template Creation Coming Soon")
                     .navigationTitle("Create Template")
+                    #if os(iOS)
                     .navigationBarTitleDisplayMode(.inline)
+                    #endif
                     .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
+                        ToolbarItem(placement: {
+                            #if os(iOS)
+                            .topBarLeading
+                            #else
+                            .cancellationAction
+                            #endif
+                        }()) {
                             Button("Cancel") { showingCreateTemplate = false }
                         }
                     }
@@ -402,6 +410,15 @@ private struct TemplatePreviewView: View {
     
     @State private var showingDuplicateAlert = false
     @State private var duplicateName = ""
+    @State private var showingCustomization = false
+    @State private var currentTemplate: InvoiceTemplate
+    
+    init(template: InvoiceTemplate, onSelect: @escaping (InvoiceTemplate) -> Void, onDuplicate: @escaping (InvoiceTemplate) -> Void) {
+        self.template = template
+        self.onSelect = onSelect
+        self.onDuplicate = onDuplicate
+        self._currentTemplate = State(initialValue: template)
+    }
     
     var body: some View {
         NavigationStack {
@@ -416,18 +433,38 @@ private struct TemplatePreviewView: View {
                 .padding()
             }
             .navigationTitle(template.displayName)
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: {
+                    #if os(iOS)
+                    .topBarLeading
+                    #else
+                    .cancellationAction
+                    #endif
+                }()) {
                     Button("Close") { dismiss() }
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: {
+                    #if os(iOS)
+                    .topBarTrailing
+                    #else
+                    .primaryAction
+                    #endif
+                }()) {
                     Menu {
                         Button {
-                            onSelect(template)
+                            onSelect(currentTemplate)
                         } label: {
                             Label("Select Template", systemImage: "checkmark.circle")
+                        }
+                        
+                        Button {
+                            showingCustomization = true
+                        } label: {
+                            Label("Customize", systemImage: "slider.horizontal.3")
                         }
                         
                         if !template.isCustom {
@@ -454,6 +491,11 @@ private struct TemplatePreviewView: View {
                 .disabled(duplicateName.isEmpty)
             } message: {
                 Text("Enter a name for the duplicated template.")
+            }
+            .sheet(isPresented: $showingCustomization) {
+                TemplateCustomizationView(template: currentTemplate) { customizedTemplate in
+                    currentTemplate = customizedTemplate
+                }
             }
         }
     }
@@ -486,10 +528,10 @@ private struct TemplatePreviewView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 12) {
-                PropertyRow(title: "Header Style", value: template.headerLayout.displayName)
-                PropertyRow(title: "Footer Style", value: template.footerLayout.displayName)
-                PropertyRow(title: "Logo Position", value: template.logoPosition.displayName)
-                PropertyRow(title: "Font Size", value: "\(template.fontSize)pt")
+                PropertyRow(title: "Header Style", value: currentTemplate.headerLayout.displayName)
+                PropertyRow(title: "Footer Style", value: currentTemplate.footerLayout.displayName)
+                PropertyRow(title: "Logo Position", value: currentTemplate.logoPosition.displayName)
+                PropertyRow(title: "Font Size", value: "\(currentTemplate.fontSize)pt")
             }
             
             // Color scheme
@@ -499,9 +541,9 @@ private struct TemplatePreviewView: View {
                     .fontWeight(.medium)
                 
                 HStack(spacing: 12) {
-                    ColorSwatch(color: template.primaryColorSwiftUI(), label: "Primary")
-                    ColorSwatch(color: template.secondaryColorSwiftUI(), label: "Secondary")
-                    ColorSwatch(color: template.accentColorSwiftUI(), label: "Accent")
+                    ColorSwatch(color: currentTemplate.primaryColorSwiftUI(), label: "Primary")
+                    ColorSwatch(color: currentTemplate.secondaryColorSwiftUI(), label: "Secondary")
+                    ColorSwatch(color: currentTemplate.accentColorSwiftUI(), label: "Accent")
                 }
             }
         }

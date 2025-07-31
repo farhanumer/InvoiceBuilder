@@ -30,6 +30,10 @@ public struct BusinessProfileView: View {
     @State private var defaultTaxRateString = ""
     @State private var invoiceNumberPrefixString = ""
     @State private var nextInvoiceNumberString = ""
+    @State private var selectedInvoiceNumberFormat: InvoiceNumberFormat = .sequential
+    @State private var includeYearInInvoiceNumber = false
+    @State private var includeMonthInInvoiceNumber = false
+    @State private var invoiceNumberPadding = 4
     
     public init() {
         // Initialize with existing profile or create new one
@@ -287,6 +291,40 @@ public struct BusinessProfileView: View {
             .keyboardType(.numberPad)
             #endif
             
+            if isEditing {
+                // Invoice Number Format Picker
+                HStack {
+                    Text("Number Format")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Picker("Format", selection: $selectedInvoiceNumberFormat) {
+                        ForEach(InvoiceNumberFormat.allCases, id: \.self) { format in
+                            Text(format.displayName).tag(format)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                
+                // Custom format options
+                if selectedInvoiceNumberFormat == .custom {
+                    Toggle("Include Year", isOn: $includeYearInInvoiceNumber)
+                    Toggle("Include Month", isOn: $includeMonthInInvoiceNumber)
+                }
+                
+                // Number padding
+                HStack {
+                    Text("Number Padding")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Picker("Padding", selection: $invoiceNumberPadding) {
+                        ForEach(1...6, id: \.self) { padding in
+                            Text("\(padding) digits").tag(padding)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+            }
+            
             if !isEditing {
                 HStack {
                     Text("Next Invoice ID")
@@ -388,6 +426,10 @@ public struct BusinessProfileView: View {
         defaultTaxRateString = businessProfile.defaultTaxRate == 0 ? "" : String(describing: businessProfile.defaultTaxRate)
         invoiceNumberPrefixString = businessProfile.invoiceNumberPrefix
         nextInvoiceNumberString = String(businessProfile.nextInvoiceNumber)
+        selectedInvoiceNumberFormat = businessProfile.invoiceNumberFormat
+        includeYearInInvoiceNumber = businessProfile.includeYearInInvoiceNumber
+        includeMonthInInvoiceNumber = businessProfile.includeMonthInInvoiceNumber
+        invoiceNumberPadding = businessProfile.invoiceNumberPadding
     }
     
     private func saveBusinessProfile() {
@@ -421,6 +463,12 @@ public struct BusinessProfileView: View {
                 businessProfile.nextInvoiceNumber = nextNumber
             }
             
+            // Update invoice numbering format settings
+            businessProfile.invoiceNumberFormat = selectedInvoiceNumberFormat
+            businessProfile.includeYearInInvoiceNumber = includeYearInInvoiceNumber
+            businessProfile.includeMonthInInvoiceNumber = includeMonthInInvoiceNumber
+            businessProfile.invoiceNumberPadding = invoiceNumberPadding
+            
             // Save to persistence layer
             await saveToDatabase()
             
@@ -448,6 +496,10 @@ public struct BusinessProfileView: View {
             existing.registrationNumber = businessProfile.registrationNumber
             existing.invoicePrefix = businessProfile.invoiceNumberPrefix
             existing.nextInvoiceNumber = businessProfile.nextInvoiceNumber
+            existing.invoiceNumberFormat = businessProfile.invoiceNumberFormat.rawValue
+            existing.includeYearInInvoice = businessProfile.includeYearInInvoiceNumber
+            existing.includeMonthInInvoice = businessProfile.includeMonthInInvoiceNumber
+            existing.invoiceNumberPadding = businessProfile.invoiceNumberPadding
             existing.taxRate = businessProfile.defaultTaxRate
             existing.defaultCurrency = businessProfile.currency.rawValue
             existing.defaultPaymentTerms = businessProfile.paymentTerms.rawValue
@@ -489,6 +541,10 @@ public struct BusinessProfileView: View {
             newProfile.registrationNumber = businessProfile.registrationNumber
             newProfile.invoicePrefix = businessProfile.invoiceNumberPrefix
             newProfile.nextInvoiceNumber = businessProfile.nextInvoiceNumber
+            newProfile.invoiceNumberFormat = businessProfile.invoiceNumberFormat.rawValue
+            newProfile.includeYearInInvoice = businessProfile.includeYearInInvoiceNumber
+            newProfile.includeMonthInInvoice = businessProfile.includeMonthInInvoiceNumber
+            newProfile.invoiceNumberPadding = businessProfile.invoiceNumberPadding
             newProfile.taxRate = businessProfile.defaultTaxRate
             newProfile.defaultCurrency = businessProfile.currency.rawValue
             newProfile.defaultPaymentTerms = businessProfile.paymentTerms.rawValue

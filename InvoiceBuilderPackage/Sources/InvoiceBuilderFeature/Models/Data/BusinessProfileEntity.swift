@@ -18,6 +18,10 @@ public final class BusinessProfileEntity {
     public var defaultPaymentTerms: String?
     public var invoicePrefix: String
     public var nextInvoiceNumber: Int
+    public var invoiceNumberFormat: String?
+    public var includeYearInInvoice: Bool = false
+    public var includeMonthInInvoice: Bool = false
+    public var invoiceNumberPadding: Int = 4
     public var taxRate: Decimal
     public var createdAt: Date
     public var updatedAt: Date
@@ -46,6 +50,10 @@ public final class BusinessProfileEntity {
         defaultPaymentTerms: String? = nil,
         invoicePrefix: String = "INV",
         nextInvoiceNumber: Int = 1,
+        invoiceNumberFormat: String? = nil,
+        includeYearInInvoice: Bool = false,
+        includeMonthInInvoice: Bool = false,
+        invoiceNumberPadding: Int = 4,
         taxRate: Decimal = 0.0
     ) {
         self.id = id
@@ -63,6 +71,10 @@ public final class BusinessProfileEntity {
         self.defaultPaymentTerms = defaultPaymentTerms
         self.invoicePrefix = invoicePrefix
         self.nextInvoiceNumber = nextInvoiceNumber
+        self.invoiceNumberFormat = invoiceNumberFormat
+        self.includeYearInInvoice = includeYearInInvoice
+        self.includeMonthInInvoice = includeMonthInInvoice
+        self.invoiceNumberPadding = invoiceNumberPadding
         self.taxRate = taxRate
         self.createdAt = Date()
         self.updatedAt = Date()

@@ -1,5 +1,9 @@
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 public struct ClientPickerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -95,10 +99,38 @@ private struct ClientPickerRow: View {
             HStack(spacing: 12) {
                 // Avatar
                 Group {
-                    if let avatarData = client.avatarData, let uiImage = UIImage(data: avatarData) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
+                    if let avatarData = client.avatarData {
+                        #if canImport(UIKit)
+                        if let uiImage = UIImage(data: avatarData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            Circle()
+                                .fill(.gray.opacity(0.3))
+                                .overlay {
+                                    Text(String(client.name.prefix(1)))
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.white)
+                                }
+                        }
+                        #elseif canImport(AppKit)
+                        if let nsImage = NSImage(data: avatarData) {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            Circle()
+                                .fill(.gray.opacity(0.3))
+                                .overlay {
+                                    Text(String(client.name.prefix(1)))
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.white)
+                                }
+                        }
+                        #endif
                     } else {
                         Circle()
                             .fill(.gray.opacity(0.3))

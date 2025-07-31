@@ -5,6 +5,7 @@ public struct InvoiceListView: View {
     @Environment(\.modelContext) private var modelContext
     
     @Query private var invoices: [InvoiceEntity]
+    @Query private var businessProfiles: [BusinessProfileEntity]
     @State private var searchText = ""
     @State private var selectedStatus: InvoiceStatusFilter = .all
     @State private var showingNewInvoice = false
@@ -47,7 +48,8 @@ public struct InvoiceListView: View {
     
     private var summaryStats: InvoiceSummaryStats {
         let allInvoices = invoices.map { Invoice(from: $0) }
-        return InvoiceSummaryStats(invoices: allInvoices)
+        let businessProfile = businessProfiles.first.map { BusinessProfile(from: $0) }
+        return InvoiceSummaryStats(invoices: allInvoices, businessProfile: businessProfile)
     }
     
     public init() {}
@@ -98,15 +100,9 @@ public struct InvoiceListView: View {
             }
         }
         .sheet(isPresented: $showingNewInvoice) {
-            NavigationStack {
-                Text("Invoice Builder Coming Soon")
-                    .navigationTitle("New Invoice")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button("Cancel") { showingNewInvoice = false }
-                        }
-                    }
+            InvoiceBuilderView { invoice in
+                // Handle saved invoice
+                showingNewInvoice = false
             }
         }
         .sheet(isPresented: $showingInvoiceDetail) {
@@ -453,13 +449,15 @@ private struct InvoiceSummaryStats {
     let totalValue: Decimal
     let outstanding: Decimal
     let overdueCount: Int
+    private let businessProfile: BusinessProfile?
     
-    init(invoices: [Invoice]) {
+    init(invoices: [Invoice], businessProfile: BusinessProfile? = nil) {
         self.totalValue = invoices.reduce(into: 0) { $0 += $1.total }
         self.outstanding = invoices
             .filter { $0.status == .sent || $0.status == .overdue || $0.isOverdue }
             .reduce(into: 0) { $0 += $1.total }
         self.overdueCount = invoices.filter { $0.isOverdue }.count
+        self.businessProfile = businessProfile
     }
     
     var formattedTotalValue: String {
@@ -471,10 +469,11 @@ private struct InvoiceSummaryStats {
     }
     
     private func formatCurrency(_ amount: Decimal) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
+        if let businessProfile = businessProfile {
+            return businessProfile.currency.formatAmount(amount)
+        }
+        // Fallback to USD if no business profile
+        return Currency.usd.formatAmount(amount)
     }
 }
 

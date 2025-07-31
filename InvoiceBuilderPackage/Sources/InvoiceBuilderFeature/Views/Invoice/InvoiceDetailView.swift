@@ -1,6 +1,10 @@
 import SwiftUI
 import SwiftData
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 public struct InvoiceDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -89,14 +93,11 @@ public struct InvoiceDetailView: View {
             }
         }
         .sheet(isPresented: $showingEditView) {
-            Text("Invoice Builder Coming Soon")
-                .navigationTitle("Edit Invoice")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Cancel") { showingEditView = false }
-                    }
-                }
+            InvoiceBuilderView(existingInvoice: invoice) { updatedInvoice in
+                // Handle updated invoice - reload the view with new data
+                invoice = updatedInvoice
+                showingEditView = false
+            }
         }
         .confirmationDialog(
             "Delete Invoice",
@@ -208,10 +209,38 @@ public struct InvoiceDetailView: View {
                 HStack(spacing: 12) {
                     // Avatar
                     Group {
-                        if let avatarData = client.avatarData, let uiImage = UIImage(data: avatarData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
+                        if let avatarData = client.avatarData {
+                            #if canImport(UIKit)
+                            if let uiImage = UIImage(data: avatarData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } else {
+                                Circle()
+                                    .fill(.gray.opacity(0.3))
+                                    .overlay {
+                                        Text(String(client.name.prefix(1)))
+                                            .font(.headline)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(.white)
+                                    }
+                            }
+                            #elseif canImport(AppKit)
+                            if let nsImage = NSImage(data: avatarData) {
+                                Image(nsImage: nsImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } else {
+                                Circle()
+                                    .fill(.gray.opacity(0.3))
+                                    .overlay {
+                                        Text(String(client.name.prefix(1)))
+                                            .font(.headline)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(.white)
+                                    }
+                            }
+                            #endif
                         } else {
                             Circle()
                                 .fill(.gray.opacity(0.3))
@@ -319,7 +348,7 @@ public struct InvoiceDetailView: View {
                 
                 // Items
                 ForEach(invoice.items) { item in
-                    InvoiceItemDetailRow(item: item)
+                    InvoiceItemDetailRow(item: item, currency: invoice.currency)
                 }
             }
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
@@ -556,6 +585,12 @@ public struct InvoiceDetailView: View {
 
 private struct InvoiceItemDetailRow: View {
     let item: InvoiceItem
+    let currency: Currency
+    
+    init(item: InvoiceItem, currency: Currency = .usd) {
+        self.item = item
+        self.currency = currency
+    }
     
     var body: some View {
         HStack {
@@ -592,10 +627,7 @@ private struct InvoiceItemDetailRow: View {
     }
     
     private func formatCurrency(_ amount: Decimal) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: amount as NSDecimalNumber) ?? "$0.00"
+        return currency.formatAmount(amount)
     }
     
     private func formatDecimal(_ amount: Decimal) -> String {

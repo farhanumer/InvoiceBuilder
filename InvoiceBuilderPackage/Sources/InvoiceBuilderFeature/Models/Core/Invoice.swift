@@ -142,6 +142,13 @@ public struct Invoice: Sendable, Identifiable {
         updatedAt = Date()
     }
     
+    public mutating func updateTotals(subtotal: Decimal, taxAmount: Decimal, discountAmount: Decimal) {
+        self.subtotal = subtotal
+        self.taxAmount = taxAmount
+        self.total = subtotal + taxAmount - discountAmount
+        self.updatedAt = Date()
+    }
+    
     public func toEntity() -> InvoiceEntity {
         let entity = InvoiceEntity(
             id: id,

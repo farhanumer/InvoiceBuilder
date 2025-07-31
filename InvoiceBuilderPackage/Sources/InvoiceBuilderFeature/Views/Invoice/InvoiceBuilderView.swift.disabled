@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UIKit
 
 public struct InvoiceBuilderView: View {
     @Environment(\.modelContext) private var modelContext
@@ -61,7 +60,7 @@ public struct InvoiceBuilderView: View {
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
             #endif
-            .toolbar {
+            .toolbar(content: {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         dismiss()
@@ -75,7 +74,7 @@ public struct InvoiceBuilderView: View {
                     .fontWeight(.semibold)
                     .disabled(!isFormValid)
                 }
-            }
+            })
             .onAppear {
                 setupNewInvoice()
             }
@@ -154,20 +153,18 @@ public struct InvoiceBuilderView: View {
                 displayedComponents: .date
             )
             
-            if let poBinding = Binding<String>(
-                get: { invoice.poNumber ?? "" },
-                set: { invoice.poNumber = $0.isEmpty ? nil : $0 }
-            ) {
-                HStack {
-                    Text("PO Number")
-                        .fontWeight(.medium)
-                    
-                    Spacer()
-                    
-                    TextField("Optional", text: poBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 150)
-                }
+            HStack {
+                Text("PO Number")
+                    .fontWeight(.medium)
+                
+                Spacer()
+                
+                TextField("Optional", text: Binding(
+                    get: { invoice.poNumber ?? "" },
+                    set: { invoice.poNumber = $0.isEmpty ? nil : $0 }
+                ))
+                .textFieldStyle(.roundedBorder)
+                .frame(maxWidth: 150)
             }
         }
     }
@@ -376,8 +373,8 @@ public struct InvoiceBuilderView: View {
             TextField(
                 "Payment terms...",
                 text: Binding(
-                    get: { invoice.paymentTerms ?? "" },
-                    set: { invoice.paymentTerms = $0.isEmpty ? nil : $0 }
+                    get: { invoice.terms ?? "" },
+                    set: { invoice.terms = $0.isEmpty ? nil : $0 }
                 ),
                 axis: .vertical
             )
@@ -393,9 +390,9 @@ public struct InvoiceBuilderView: View {
         // Generate invoice number from business profile
         if let profile = businessProfile {
             let nextNumber = profile.nextInvoiceNumber
-            invoice.invoiceNumber = "\(profile.invoicePrefix)-\(String(format: "%03d", nextNumber))"
+            invoice.invoiceNumber = "\(profile.invoiceNumberPrefix)-\(String(format: "%04d", nextNumber))"
         } else {
-            invoice.invoiceNumber = "INV-001"
+            invoice.invoiceNumber = "INV-0001"
         }
     }
     
@@ -415,7 +412,9 @@ public struct InvoiceBuilderView: View {
     private func saveToDatabase(status: InvoiceStatus) async {
         do {
             invoice.updateStatus(status)
-            invoice.client = selectedClient
+            if let selectedClient = selectedClient {
+                invoice.client = selectedClient
+            }
             
             let entity = invoice.toEntity()
             
@@ -463,9 +462,10 @@ public struct InvoiceBuilderView: View {
     }
     
     private func findOrCreateClientEntity(for client: Client) -> ClientEntity {
+        let clientId = client.id
         let descriptor = FetchDescriptor<ClientEntity>(
             predicate: #Predicate<ClientEntity> { entity in
-                entity.id == client.id
+                entity.id == clientId
             }
         )
         
@@ -486,12 +486,17 @@ public struct InvoiceBuilderView: View {
             phone: client.phone,
             website: client.website,
             taxNumber: client.taxNumber,
-            notes: client.notes,
-            isActive: client.isActive
+            notes: client.notes
         )
         
         if let address = client.address {
-            newEntity.address = AddressEntity(from: address)
+            newEntity.address = AddressEntity(
+                street: address.street,
+                city: address.city,
+                state: address.state,
+                postalCode: address.postalCode,
+                country: address.country
+            )
         }
         
         modelContext.insert(newEntity)

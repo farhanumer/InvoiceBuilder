@@ -12,14 +12,15 @@ Based on the PRD analysis and current state assessment (greenfield project), her
 - `AppDelegate.swift` - Legacy app delegate for system integration
 
 ### Data Layer
-- `Models/Invoice.swift` - Core invoice data model
-- `Models/Client.swift` - Client information model
-- `Models/BusinessProfile.swift` - User business profile model
-- `Models/InvoiceItem.swift` - Individual invoice line item model
-- `Models/InvoiceTemplate.swift` - Template configuration model
-- `Services/CoreDataStack.swift` - Core Data persistence layer
+- `Models/Core/Invoice.swift` - Core invoice data model
+- `Models/Core/Client.swift` - Client information model
+- `Models/Core/BusinessProfile.swift` - Enhanced business profile model with invoice numbering formats
+- `Models/Core/InvoiceItem.swift` - Individual invoice line item and service item models
+- `Models/Core/InvoiceTemplate.swift` - Template configuration model
+- `Models/Data/BusinessProfileEntity.swift` - SwiftData entity for business profiles with invoice numbering
+- `Models/Data/ServiceItemEntity.swift` - SwiftData entity for reusable service items
+- `Services/SwiftDataStack.swift` - SwiftData persistence layer
 - `Services/CloudSyncService.swift` - Cross-platform synchronization service
-- `InvoiceBuilder.xcdatamodeld` - Core Data model file
 
 ### Authentication & User Management
 - `Services/AuthenticationService.swift` - Authentication logic and session management
@@ -39,9 +40,11 @@ Based on the PRD analysis and current state assessment (greenfield project), her
 - `Views/Items/ItemsListView.swift` - Service/product items management
 
 ### Invoice System
-- `Views/Invoice/InvoiceBuilderView.swift` - Main invoice creation interface
-- `Views/Invoice/InvoiceListView.swift` - Invoice listing and management
-- `Views/Invoice/InvoiceDetailView.swift` - Individual invoice view
+- `Views/Invoice/InvoiceBuilderView.swift` - Main invoice creation interface with per-item tax rates and comprehensive form handling
+- `Views/Invoice/InvoiceItemEditorView.swift` - Enhanced item editor with service item picker integration and tax rate configuration
+- `Views/Invoice/ServiceItemPickerView.swift` - Service item selection interface with search and filtering
+- `Views/Invoice/InvoiceListView.swift` - Comprehensive invoice listing with status filtering, search, and summary statistics
+- `Views/Invoice/InvoiceDetailView.swift` - Full-featured invoice detail view with status management, editing, duplication, and PDF export
 - `Views/Templates/TemplateSelectionView.swift` - Template picker interface
 - `Services/InvoiceTemplateService.swift` - Template rendering engine
 - `Services/PDFGenerationService.swift` - PDF export functionality
@@ -131,23 +134,23 @@ Based on the PRD analysis and current state assessment (greenfield project), her
   - [x] 4.12 Implement data persistence for all profile and client data
   - [x] 4.13 Create unit tests for business profile and client management
 
-- [ ] 5.0 Invoice Creation & Template Engine
+- [x] 5.0 Invoice Creation & Template Engine
   - [x] 5.1 Design and implement 15+ professional invoice templates
   - [x] 5.2 Create InvoiceTemplateService for template rendering and customization
   - [x] 5.3 Build TemplateSelectionView with preview functionality
-  - [ ] 5.4 Implement template customization (colors, fonts, layout)
-  - [ ] 5.5 Create InvoiceBuilderView with intuitive creation interface
-  - [ ] 5.6 Add automatic invoice numbering with custom options
-  - [ ] 5.7 Implement date/due date pickers and PO number support
-  - [ ] 5.8 Add multiple currency support with proper formatting
-  - [ ] 5.9 Create dynamic item addition with quantity and pricing
-  - [ ] 5.10 Implement InvoiceCalculator for taxes, discounts, and totals
-  - [ ] 5.11 Add tax rate configuration per item
-  - [ ] 5.12 Create invoice preview functionality before saving
-  - [ ] 5.13 Implement InvoiceListView with status filtering and search
-  - [ ] 5.14 Add invoice status management (paid/unpaid/overdue)
-  - [ ] 5.15 Create InvoiceDetailView for viewing and editing
-  - [ ] 5.16 Add invoice duplication for recurring billing
+  - [x] 5.4 Implement template customization (colors, fonts, layout)
+  - [x] 5.5 Create InvoiceBuilderView with intuitive creation interface
+  - [x] 5.6 Add automatic invoice numbering with custom options
+  - [x] 5.7 Implement date/due date pickers and PO number support
+  - [x] 5.8 Add multiple currency support with proper formatting
+  - [x] 5.9 Create dynamic item addition with quantity and pricing (enhanced with service item picker)
+  - [x] 5.10 Implement InvoiceCalculator for taxes, discounts, and totals
+  - [x] 5.11 Add tax rate configuration per item
+  - [x] 5.12 Create invoice preview functionality before saving
+  - [x] 5.13 Implement InvoiceListView with status filtering and search
+  - [x] 5.14 Add invoice status management (paid/unpaid/overdue)
+  - [x] 5.15 Create InvoiceDetailView for viewing and editing
+  - [x] 5.16 Add invoice duplication for recurring billing
   - [x] 5.17 Implement PDFGenerationService for high-quality PDF export
   - [ ] 5.18 Create unit tests for invoice creation and template system
 

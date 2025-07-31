@@ -160,8 +160,9 @@ public final class InvoiceTemplateService: @unchecked Sendable {
         }
         
         // Find existing entity
+        let templateId = template.id
         let predicate = #Predicate<InvoiceTemplateEntity> { entity in
-            entity.id == template.id
+            entity.id == templateId
         }
         
         let descriptor = FetchDescriptor(predicate: predicate)
@@ -208,8 +209,9 @@ public final class InvoiceTemplateService: @unchecked Sendable {
         }
         
         // Find and delete entity
+        let templateId = template.id
         let predicate = #Predicate<InvoiceTemplateEntity> { entity in
-            entity.id == template.id
+            entity.id == templateId
         }
         
         let descriptor = FetchDescriptor(predicate: predicate)
@@ -281,10 +283,17 @@ public final class InvoiceTemplateService: @unchecked Sendable {
     public func generateTemplatePreview(_ template: InvoiceTemplate) -> some View {
         // Create sample data for preview
         let sampleClient = Client(
-            id: UUID(),
             name: "Sample Client Co.",
             email: "client@example.com",
-            address: "123 Business St, City, State 12345"
+            phone: "+1 (555) 123-4567",
+            address: Address(
+                street: "123 Business St",
+                city: "City",
+                state: "State",
+                postalCode: "12345",
+                country: "USA"
+            ),
+            company: "Sample Company Inc."
         )
         
         let sampleItems = [
@@ -302,25 +311,30 @@ public final class InvoiceTemplateService: @unchecked Sendable {
             )
         ]
         
-        let sampleInvoice = Invoice(
-            invoiceNumber: "INV-001",
+        var sampleInvoice = Invoice(
+            invoiceNumber: "INV-0001",
             date: Date(),
             dueDate: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date(),
             client: sampleClient,
-            items: sampleItems,
-            status: .sent,
-            notes: "Thank you for your business!",
-            taxRate: 0.08,
-            terms: "Payment due within 30 days"
+            items: sampleItems
         )
+        sampleInvoice.updateStatus(.sent)
+        sampleInvoice.notes = "Thank you for your business!"
+        sampleInvoice.terms = "Payment due within 30 days"
         
         let sampleBusinessProfile = BusinessProfile(
             businessName: "Your Business Name",
-            contactName: "John Doe",
+            ownerName: "John Doe",
             email: "contact@yourbusiness.com",
             phone: "+1 (555) 123-4567",
-            address: "456 Business Ave, Suite 100, City, State 12345",
             website: "www.yourbusiness.com",
+            address: Address(
+                street: "456 Business Ave, Suite 100",
+                city: "City",
+                state: "State",
+                postalCode: "12345",
+                country: "USA"
+            ),
             taxId: "12-3456789"
         )
         
@@ -435,9 +449,9 @@ private struct InvoiceTemplateRenderer: View {
                     .foregroundStyle(template.primaryColorSwiftUI())
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(businessProfile.address)
+                    Text(businessProfile.address?.formattedAddress ?? "")
                     Text(businessProfile.email)
-                    Text(businessProfile.phone)
+                    Text(businessProfile.phone ?? "")
                 }
                 .font(.caption)
                 .foregroundStyle(template.secondaryColorSwiftUI())
@@ -511,10 +525,10 @@ private struct InvoiceTemplateRenderer: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(template.secondaryColorSwiftUI())
                     
-                    Text(businessProfile.contactName)
+                    Text(businessProfile.ownerName)
                         .fontWeight(.medium)
-                    Text(businessProfile.address)
-                    Text("\(businessProfile.email) • \(businessProfile.phone)")
+                    Text(businessProfile.address?.formattedAddress ?? "")
+                    Text("\(businessProfile.email) • \(businessProfile.phone ?? "")")
                     
                     if let taxId = businessProfile.taxId {
                         Text("Tax ID: \(taxId)")
@@ -535,7 +549,7 @@ private struct InvoiceTemplateRenderer: View {
                     Text(invoice.client.name)
                         .fontWeight(.medium)
                     if let address = invoice.client.address {
-                        Text(address)
+                        Text(address.formattedAddress)
                     }
                     Text(invoice.client.email)
                 }
@@ -686,14 +700,14 @@ private struct InvoiceTemplateRenderer: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text("\(item.quantity, specifier: "%.0f")")
+                    Text(String(format: "%.0f", Double(truncating: item.quantity as NSNumber)))
                         .frame(width: 50)
                     
                     Text(item.rate, format: .currency(code: "USD"))
                         .frame(width: 80, alignment: .trailing)
                     
                     if template.showTaxColumn {
-                        Text("\(item.taxRate, specifier: "%.1f")%")
+                        Text(String(format: "%.1f%%", Double(truncating: item.taxRate as NSNumber)))
                             .frame(width: 60, alignment: .trailing)
                     }
                     
@@ -854,7 +868,7 @@ private struct InvoiceTemplateRenderer: View {
                         .foregroundStyle(template.secondaryColorSwiftUI())
                         .frame(width: 200)
                     
-                    Text(businessProfile.contactName)
+                    Text(businessProfile.ownerName)
                         .font(.caption)
                         .foregroundStyle(template.secondaryColorSwiftUI())
                 }
