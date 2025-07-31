@@ -15,6 +15,7 @@ public final class SwiftDataStack {
             BusinessProfileEntity.self,
             InvoiceItemEntity.self,
             InvoiceTemplateEntity.self,
+            ServiceItemEntity.self,
             AddressEntity.self
         ])
         
@@ -24,7 +25,7 @@ public final class SwiftDataStack {
             isStoredInMemoryOnly: false,
             allowsSave: true,
             groupContainer: .automatic,
-            cloudKitDatabase: .automatic
+            cloudKitDatabase: .none  // Temporarily disable CloudKit integration
         )
         
         do {
@@ -33,7 +34,25 @@ public final class SwiftDataStack {
                 configurations: [modelConfiguration]
             )
         } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
+            print("ModelContainer creation failed with error: \(error)")
+            print("Error details: \(String(describing: error))")
+            
+            // Try to create a simpler in-memory container as fallback
+            do {
+                let fallbackConfiguration = ModelConfiguration(
+                    "InvoiceBuilderDatabase",
+                    schema: schema,
+                    isStoredInMemoryOnly: true
+                )
+                
+                self.modelContainer = try ModelContainer(
+                    for: schema,
+                    configurations: [fallbackConfiguration]
+                )
+                print("Created fallback in-memory ModelContainer")
+            } catch {
+                fatalError("Failed to create ModelContainer even with fallback: \(error)")
+            }
         }
     }
     
