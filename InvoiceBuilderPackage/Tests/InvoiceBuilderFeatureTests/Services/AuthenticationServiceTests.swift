@@ -6,48 +6,52 @@ import Foundation
 struct AuthenticationServiceTests {
     
     @Test("AuthenticationService shared instance exists")
+    @MainActor
     func sharedInstanceExists() {
         let service = AuthenticationService.shared
-        #expect(service != nil)
+        // Service exists (no need to check for nil on non-optional)
         #expect(!service.isAuthenticated)
         #expect(service.currentUser == nil)
     }
     
     @Test("Email validation works correctly")
+    @MainActor
     func emailValidation() async throws {
         let service = AuthenticationService.shared
         
         // Valid emails should not throw
-        try await service.signInWithEmail("test@example.com", password: "password123")
+        _ = try await service.signInWithEmail("test@example.com", password: "password123")
         
         // Invalid emails should throw
         await #expect(throws: AuthenticationError.self) {
-            try await service.signInWithEmail("invalid-email", password: "password123")
+            _ = try await service.signInWithEmail("invalid-email", password: "password123")
         }
         
         await #expect(throws: AuthenticationError.self) {
-            try await service.signInWithEmail("", password: "password123")
+            _ = try await service.signInWithEmail("", password: "password123")
         }
     }
     
     @Test("Password validation works correctly")
+    @MainActor
     func passwordValidation() async throws {
         let service = AuthenticationService.shared
         
         // Valid password should not throw
-        try await service.signInWithEmail("test@example.com", password: "password123")
+        _ = try await service.signInWithEmail("test@example.com", password: "password123")
         
         // Weak passwords should throw
         await #expect(throws: AuthenticationError.self) {
-            try await service.signInWithEmail("test@example.com", password: "123")
+            _ = try await service.signInWithEmail("test@example.com", password: "123")
         }
         
         await #expect(throws: AuthenticationError.self) {
-            try await service.signInWithEmail("test@example.com", password: "")
+            _ = try await service.signInWithEmail("test@example.com", password: "")
         }
     }
     
     @Test("Email sign in creates authenticated user")
+    @MainActor
     func emailSignInCreatesUser() async throws {
         let service = AuthenticationService.shared
         
@@ -60,6 +64,7 @@ struct AuthenticationServiceTests {
     }
     
     @Test("Email sign up creates new user")
+    @MainActor
     func emailSignUpCreatesUser() async throws {
         let service = AuthenticationService.shared
         
@@ -77,23 +82,25 @@ struct AuthenticationServiceTests {
     }
     
     @Test("Phone number validation works correctly")
+    @MainActor
     func phoneNumberValidation() async throws {
         let service = AuthenticationService.shared
         
         // Valid phone numbers should not throw
-        try await service.signInWithPhone("+1234567890123", verificationCode: "123456")
+        _ = try await service.signInWithPhone("+1234567890123", verificationCode: "123456")
         
         // Invalid phone numbers should throw
         await #expect(throws: AuthenticationError.self) {
-            try await service.signInWithPhone("invalid", verificationCode: "123456")
+            _ = try await service.signInWithPhone("invalid", verificationCode: "123456")
         }
         
         await #expect(throws: AuthenticationError.self) {
-            try await service.signInWithPhone("", verificationCode: "123456")
+            _ = try await service.signInWithPhone("", verificationCode: "123456")
         }
     }
     
     @Test("Phone sign in creates authenticated user")
+    @MainActor
     func phoneSignInCreatesUser() async throws {
         let service = AuthenticationService.shared
         
@@ -106,6 +113,7 @@ struct AuthenticationServiceTests {
     }
     
     @Test("Phone verification can be sent")
+    @MainActor
     func phoneVerificationSending() async throws {
         let service = AuthenticationService.shared
         
@@ -119,6 +127,7 @@ struct AuthenticationServiceTests {
     }
     
     @Test("Sign out clears authentication state")
+    @MainActor
     func signOutClearsState() async throws {
         let service = AuthenticationService.shared
         
@@ -135,6 +144,7 @@ struct AuthenticationServiceTests {
     }
     
     @Test("Delete account clears authentication state")
+    @MainActor
     func deleteAccountClearsState() async throws {
         let service = AuthenticationService.shared
         
@@ -151,6 +161,7 @@ struct AuthenticationServiceTests {
     }
     
     @Test("Delete account throws when not authenticated")
+    @MainActor
     func deleteAccountThrowsWhenNotAuthenticated() async throws {
         let service = AuthenticationService.shared
         
@@ -226,9 +237,10 @@ struct AuthenticationServiceTests {
 struct KeychainServiceTests {
     
     @Test("KeychainService shared instance exists")
+    @MainActor
     func sharedInstanceExists() {
-        let service = KeychainService.shared
-        #expect(service != nil)
+        let _ = KeychainService.shared
+        // Service exists (no need to check for nil on non-optional)
     }
     
     @Test("Save and load data works correctly")
@@ -289,7 +301,7 @@ struct KeychainServiceTests {
         try service.delete(for: testKey)
         
         // Verify it's gone
-        #expect(throws: KeychainError.self) {
+        #expect(throws: KeychainError.itemNotFound) {
             try service.load(for: testKey)
         }
     }
@@ -318,23 +330,25 @@ struct KeychainServiceTests {
 struct AppleSignInCoordinatorTests {
     
     @Test("AppleSignInCoordinator shared instance exists")
+    @MainActor
     func sharedInstanceExists() {
         let coordinator = AppleSignInCoordinator.shared
-        #expect(coordinator != nil)
+        // Coordinator exists (no need to check for nil on non-optional)
         #expect(!coordinator.isPresenting)
         #expect(coordinator.error == nil)
     }
     
     @Test("Credential state check handles various states")
+    @MainActor
     func credentialStateCheck() async {
         let coordinator = AppleSignInCoordinator.shared
         
         // This would normally require a real Apple ID, so we just test the method exists
         // and doesn't crash with a test user ID
-        let state = await coordinator.checkCredentialState(for: "test.user.id")
+        let _ = await coordinator.checkCredentialState(for: "test.user.id")
         
         // The actual state doesn't matter for this test, just that it doesn't crash
-        #expect(state != nil)
+        // State exists (no need to check for nil on non-optional)
     }
 }
 
@@ -342,14 +356,16 @@ struct AppleSignInCoordinatorTests {
 struct GoogleSignInCoordinatorTests {
     
     @Test("GoogleSignInCoordinator shared instance exists")
+    @MainActor
     func sharedInstanceExists() {
         let coordinator = GoogleSignInCoordinator.shared
-        #expect(coordinator != nil)
+        // Coordinator exists (no need to check for nil on non-optional)
         #expect(!coordinator.isPresenting)
         #expect(coordinator.error == nil)
     }
     
     @Test("Configuration method exists and doesn't crash")
+    @MainActor
     func configurationMethodExists() {
         let coordinator = GoogleSignInCoordinator.shared
         
@@ -357,10 +373,11 @@ struct GoogleSignInCoordinatorTests {
         coordinator.configure()
         
         // Test passes if no crash occurs
-        #expect(true)
+        #expect(Bool(true))
     }
     
     @Test("Has previous sign in check works")
+    @MainActor
     func hasPreviousSignInCheck() {
         let coordinator = GoogleSignInCoordinator.shared
         

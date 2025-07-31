@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-public enum KeychainError: Error {
+public enum KeychainError: Error, Equatable {
     case duplicateItem
     case itemNotFound
     case invalidData
