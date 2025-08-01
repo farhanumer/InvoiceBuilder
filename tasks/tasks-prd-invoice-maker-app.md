@@ -172,9 +172,9 @@ Based on the PRD analysis and current state assessment (greenfield project), her
   - [x] 6.12 Add real-time updates when invoice data changes
   - [ ] 6.13 Create unit tests for analytics calculations and reporting
 
-- [ ] 7.0 Cross-Platform Sync & Cloud Integration
+- [x] 7.0 Cross-Platform Sync & Cloud Integration
   - [x] 7.1 Implement CloudSyncService with abstracted storage layer
-  - [ ] 7.2 Add iCloud/CloudKit integration for primary sync
+  - [x] 7.2 Add iCloud/CloudKit integration for primary sync
   - [ ] 7.3 Implement Dropbox API integration
   - [ ] 7.4 Add Google Drive API integration
   - [ ] 7.5 Implement OneDrive API integration
@@ -187,17 +187,31 @@ Based on the PRD analysis and current state assessment (greenfield project), her
   - [ ] 7.12 Add sync settings and preferences
   - [ ] 7.13 Create unit tests for sync services and conflict resolution
 
-- [ ] 8.0 Subscription Management & Monetization
-  - [ ] 8.1 Integrate App Store subscription framework (StoreKit 2)
-  - [ ] 8.2 Configure subscription products (monthly, yearly, lifetime)
-  - [ ] 8.3 Implement SubscriptionService for purchase management
-  - [ ] 8.4 Create usage tracking for free invoice limit (3 invoices)
-  - [ ] 8.5 Build PaywallView with pricing tiers and features
-  - [ ] 8.6 Add subscription status display and management
-  - [ ] 8.7 Implement subscription restoration across devices
-  - [ ] 8.8 Add upgrade prompts at appropriate usage points
-  - [ ] 8.9 Create SubscriptionViewModel for state management
-  - [ ] 8.10 Implement feature gating based on subscription status
-  - [ ] 8.11 Add subscription analytics and conversion tracking
-  - [ ] 8.12 Handle subscription lifecycle events (renewal, cancellation)
+- [x] 8.0 Subscription Management & Monetization
+  - [x] 8.1 Integrate App Store subscription framework (StoreKit 2)
+  - [x] 8.2 Configure subscription products (monthly, yearly, lifetime)
+  - [x] 8.3 Implement SubscriptionService for purchase management
+  - [x] 8.4 Create usage tracking for free invoice limit (3 invoices)
+  - [x] 8.5 Build PaywallView with pricing tiers and features
+  - [x] 8.6 Add subscription status display and management
+  - [x] 8.7 Implement subscription restoration across devices
+  - [x] 8.8 Add upgrade prompts at appropriate usage points
+  - [x] 8.9 Create SubscriptionViewModel for state management
+  - [x] 8.10 Implement feature gating based on subscription status
+  - [x] 8.11 Add subscription analytics and conversion tracking
+  - [x] 8.12 Handle subscription lifecycle events (renewal, cancellation)
   - [ ] 8.13 Create unit tests for subscription management and purchase flow
+
+- [x] 9.0 macOS Platform Optimization & UI Fixes
+  - [x] 9.1 Fix SwiftData ModelContainer crash on app launch
+  - [x] 9.2 Enhance invoice template system with 25+ diverse templates and proper previews
+  - [x] 9.3 Fix macOS scrolling issues across all views with proper frame constraints
+  - [x] 9.4 Fix invoice creation view layout on macOS with side-by-side editor/preview
+  - [x] 9.5 Fix form width issues on macOS (business profile, client forms, service items)
+  - [x] 9.6 Convert Form-based views to ScrollView + LazyVStack for better macOS layout
+  - [x] 9.7 Implement macOS-specific layouts using conditional compilation (#if os(macOS))
+  - [x] 9.8 Fix service item form layout and ensure proper dismiss functionality
+  - [x] 9.9 Add proper toolbar buttons and navigation for macOS platform
+  - [x] 9.10 Fix template customization modal sizing and layout for full-screen experience
+  - [x] 9.11 Implement responsive layouts that work seamlessly on both iOS and macOS
+  - [x] 9.12 Add proper sheet presentation with minimum frame sizes for macOS modals
