@@ -39,19 +39,25 @@ public struct ItemDetailView: View {
     
     public var body: some View {
         NavigationStack {
-            Form {
-                basicInfoSection
-                pricingSection
-                categorizationSection
-                
-                if !isNewItem && !isEditing {
-                    metadataSection
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                    basicInfoSection
+                    pricingSection
+                    categorizationSection
+                    
+                    if !isNewItem && !isEditing {
+                        metadataSection
+                    }
+                    
+                    if !isNewItem && isEditing {
+                        deleteSection
+                    }
                 }
-                
-                if !isNewItem && isEditing {
-                    deleteSection
-                }
+                .padding()
+                .frame(maxWidth: 600) // Reasonable form width on macOS
+                .frame(maxWidth: .infinity)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle(isNewItem ? "New Service Item" : (isEditing ? "Edit Item" : item.name))
             #if os(iOS)
             .navigationBarTitleDisplayMode(isNewItem ? .inline : .large)
@@ -112,7 +118,7 @@ public struct ItemDetailView: View {
     
     @ViewBuilder
     private var basicInfoSection: some View {
-        Section("Service Information") {
+        CardSection(title: "Service Information") {
             ItemFormField(
                 title: "Service Name",
                 text: $item.name,
@@ -137,7 +143,7 @@ public struct ItemDetailView: View {
     
     @ViewBuilder
     private var pricingSection: some View {
-        Section("Pricing") {
+        CardSection(title: "Pricing") {
             if isEditing {
                 HStack {
                     Text("Default Rate")
@@ -174,7 +180,7 @@ public struct ItemDetailView: View {
     
     @ViewBuilder
     private var categorizationSection: some View {
-        Section("Organization") {
+        CardSection(title: "Organization") {
             // Category
             if isEditing {
                 HStack {
@@ -242,7 +248,7 @@ public struct ItemDetailView: View {
     
     @ViewBuilder
     private var metadataSection: some View {
-        Section("Information") {
+        CardSection(title: "Information") {
             HStack {
                 Text("Created")
                     .foregroundStyle(.secondary)
@@ -263,7 +269,7 @@ public struct ItemDetailView: View {
     
     @ViewBuilder
     private var deleteSection: some View {
-        Section {
+        CardSection(title: "Actions") {
             Button("Delete Service Item") {
                 showingDeleteConfirmation = true
             }
@@ -400,6 +406,31 @@ public struct ItemDetailView: View {
 }
 
 // MARK: - Supporting Views
+
+private struct CardSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+            
+            VStack(spacing: 12) {
+                content
+            }
+        }
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+    }
+}
 
 private struct ItemFormField: View {
     let title: String

@@ -49,17 +49,23 @@ public struct ClientDetailView: View {
     
     public var body: some View {
         NavigationStack {
-            Form {
-                avatarSection
-                basicInfoSection
-                contactSection
-                addressSection
-                notesSection
-                
-                if !isNewClient && !isEditing {
-                    deleteSection
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                    avatarSection
+                    basicInfoSection
+                    contactSection
+                    addressSection
+                    notesSection
+                    
+                    if !isNewClient && !isEditing {
+                        deleteSection
+                    }
                 }
+                .padding()
+                .frame(maxWidth: 600) // Reasonable form width on macOS
+                .frame(maxWidth: .infinity)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle(isNewClient ? "New Client" : (isEditing ? "Edit Client" : client.name))
             #if os(iOS)
             .navigationBarTitleDisplayMode(isNewClient ? .inline : .large)
@@ -122,7 +128,7 @@ public struct ClientDetailView: View {
     
     @ViewBuilder
     private var avatarSection: some View {
-        Section {
+        CardSection(title: "Profile Photo") {
             HStack {
                 Spacer()
                 
@@ -172,7 +178,7 @@ public struct ClientDetailView: View {
     
     @ViewBuilder
     private var basicInfoSection: some View {
-        Section("Client Information") {
+        CardSection(title: "Client Information") {
             ClientFormField(
                 title: "Full Name",
                 text: $client.name,
@@ -195,7 +201,7 @@ public struct ClientDetailView: View {
     
     @ViewBuilder
     private var contactSection: some View {
-        Section("Contact Information") {
+        CardSection(title: "Contact Information") {
             ClientFormField(
                 title: "Email Address",
                 text: $client.email,
@@ -249,7 +255,7 @@ public struct ClientDetailView: View {
     
     @ViewBuilder
     private var addressSection: some View {
-        Section("Address") {
+        CardSection(title: "Address") {
             ClientFormField(
                 title: "Street Address",
                 text: $street,
@@ -296,7 +302,7 @@ public struct ClientDetailView: View {
     
     @ViewBuilder
     private var notesSection: some View {
-        Section("Notes") {
+        CardSection(title: "Notes") {
             if isEditing {
                 TextField("Additional notes about this client", text: Binding(
                     get: { client.notes ?? "" },
@@ -313,7 +319,7 @@ public struct ClientDetailView: View {
     
     @ViewBuilder
     private var deleteSection: some View {
-        Section {
+        CardSection(title: "Actions") {
             Button("Delete Client", role: .destructive) {
                 showingDeleteConfirmation = true
             }
@@ -617,6 +623,33 @@ private struct ClientAvatarView: View {
         }
         #endif
         return nil
+    }
+}
+
+// MARK: - Card Section Helper
+
+private struct CardSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+            
+            VStack(spacing: 12) {
+                content
+            }
+        }
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
 }
 

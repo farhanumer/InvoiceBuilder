@@ -53,14 +53,20 @@ public struct BusinessProfileView: View {
     
     public var body: some View {
         NavigationStack {
-            Form {
-                basicInfoSection
-                contactSection
-                businessDetailsSection
-                brandingSection
-                invoiceSettingsSection
-                taxAndPaymentSection
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                    basicInfoSection
+                    contactSection
+                    businessDetailsSection
+                    brandingSection
+                    invoiceSettingsSection
+                    taxAndPaymentSection
+                }
+                .padding()
+                .frame(maxWidth: 600) // Reasonable form width on macOS
+                .frame(maxWidth: .infinity)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle(isEditing ? "Edit Business Profile" : "Business Profile")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
@@ -104,7 +110,7 @@ public struct BusinessProfileView: View {
     
     @ViewBuilder
     private var basicInfoSection: some View {
-        Section("Business Information") {
+        CardSection(title: "Business Information") {
             FormTextField(
                 title: "Business Name",
                 text: $businessProfile.businessName,
@@ -145,7 +151,7 @@ public struct BusinessProfileView: View {
     
     @ViewBuilder
     private var contactSection: some View {
-        Section("Contact Information") {
+        CardSection(title: "Contact Information") {
             FormTextField(
                 title: "Email Address",
                 text: $businessProfile.email,
@@ -186,7 +192,7 @@ public struct BusinessProfileView: View {
             #endif
         }
         
-        Section("Business Address") {
+        CardSection(title: "Business Address") {
             FormTextField(
                 title: "Street Address",
                 text: $address,
@@ -233,7 +239,7 @@ public struct BusinessProfileView: View {
     
     @ViewBuilder
     private var businessDetailsSection: some View {
-        Section("Business Details") {
+        CardSection(title: "Business Details") {
             FormTextField(
                 title: "Tax ID / EIN",
                 text: $taxIdString,
@@ -252,7 +258,7 @@ public struct BusinessProfileView: View {
     
     @ViewBuilder
     private var brandingSection: some View {
-        Section("Branding") {
+        CardSection(title: "Branding") {
             BusinessLogoRow(
                 logoData: businessProfile.logo,
                 isEditing: isEditing,
@@ -273,7 +279,7 @@ public struct BusinessProfileView: View {
     
     @ViewBuilder
     private var invoiceSettingsSection: some View {
-        Section("Invoice Settings") {
+        CardSection(title: "Invoice Settings") {
             FormTextField(
                 title: "Invoice Number Prefix",
                 text: $invoiceNumberPrefixString,
@@ -339,7 +345,7 @@ public struct BusinessProfileView: View {
     
     @ViewBuilder
     private var taxAndPaymentSection: some View {
-        Section("Tax & Payment Settings") {
+        CardSection(title: "Tax & Payment Settings") {
             if isEditing {
                 Picker("Currency", selection: $businessProfile.currency) {
                     ForEach(Currency.allCases, id: \.self) { currency in
@@ -730,6 +736,33 @@ private struct BusinessSignatureRow: View {
         }
         #endif
         return nil
+    }
+}
+
+// MARK: - Card Section Helper
+
+private struct CardSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+            
+            VStack(spacing: 12) {
+                content
+            }
+        }
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
 }
 

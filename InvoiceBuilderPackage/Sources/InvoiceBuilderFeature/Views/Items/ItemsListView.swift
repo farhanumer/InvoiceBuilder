@@ -3,6 +3,7 @@ import SwiftData
 
 public struct ItemsListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @Query private var serviceItems: [ServiceItemEntity]
     
     @State private var searchText = ""
@@ -83,6 +84,12 @@ public struct ItemsListView: View {
                     }
                 }
                 #else
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+                
                 ToolbarItem(placement: .navigation) {
                     filtersMenu
                 }
