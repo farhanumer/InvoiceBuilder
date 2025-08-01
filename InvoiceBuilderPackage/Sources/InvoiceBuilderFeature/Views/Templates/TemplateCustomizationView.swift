@@ -119,10 +119,78 @@ struct TemplateCustomizationView: View {
                 }
             }
             #else
-            // iOS: Side-by-side layout
+            // iOS: Responsive layout - single column on phones, side-by-side on iPad
             GeometryReader { geometry in
-                HStack(spacing: 0) {
-                    // Customization Panel
+                if geometry.size.width > 768 {
+                    // iPad: Side-by-side layout
+                    HStack(spacing: 0) {
+                        // Customization Panel
+                        VStack(spacing: 0) {
+                            headerSection
+                            Divider()
+                            tabSelector
+                            
+                            ScrollView {
+                                VStack(spacing: 20) {
+                                    switch selectedTab {
+                                    case .colors:
+                                        colorCustomization
+                                    case .fonts:
+                                        fontCustomization
+                                    case .layout:
+                                        layoutCustomization
+                                    case .elements:
+                                        elementCustomization
+                                    }
+                                }
+                                .padding()
+                            }
+                            
+                            Divider()
+                            actionButtons
+                        }
+                        .frame(width: showPreview ? geometry.size.width * 0.4 : geometry.size.width)
+                        
+                        if showPreview {
+                            Divider()
+                            
+                            // Preview
+                            VStack(spacing: 0) {
+                                HStack {
+                                    Text("Preview")
+                                        .font(.headline)
+                                    
+                                    Spacer()
+                                    
+                                    Button {
+                                        withAnimation {
+                                            showPreview = false
+                                        }
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                .padding()
+                                
+                                Divider()
+                                
+                                ScrollView {
+                                    templateService.generateTemplatePreview(template)
+                                        .padding()
+                                        .background(Color.white)
+                                        .cornerRadius(8)
+                                        .shadow(radius: 2)
+                                        .padding()
+                                }
+                                .background(Color.gray.opacity(0.1))
+                            }
+                            .frame(width: geometry.size.width * 0.6)
+                        }
+                    }
+                } else {
+                    // iPhone: Single column layout with tab-based navigation
                     VStack(spacing: 0) {
                         headerSection
                         Divider()
@@ -130,6 +198,7 @@ struct TemplateCustomizationView: View {
                         
                         ScrollView {
                             VStack(spacing: 20) {
+                                // Customization controls
                                 switch selectedTab {
                                 case .colors:
                                     colorCustomization
@@ -140,51 +209,41 @@ struct TemplateCustomizationView: View {
                                 case .elements:
                                     elementCustomization
                                 }
+                                
+                                // Preview section in single column
+                                if showPreview {
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        HStack {
+                                            Text("Preview")
+                                                .font(.headline)
+                                                .fontWeight(.semibold)
+                                            
+                                            Spacer()
+                                            
+                                            Button {
+                                                withAnimation {
+                                                    showPreview = false
+                                                }
+                                            } label: {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .foregroundStyle(.secondary)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                        
+                                        templateService.generateTemplatePreview(template)
+                                            .frame(height: 300)
+                                            .background(Color.white)
+                                            .cornerRadius(8)
+                                            .shadow(radius: 2)
+                                    }
+                                }
                             }
                             .padding()
                         }
                         
                         Divider()
                         actionButtons
-                    }
-                    .frame(width: showPreview ? geometry.size.width * 0.4 : geometry.size.width)
-                    
-                    if showPreview {
-                        Divider()
-                        
-                        // Preview
-                        VStack(spacing: 0) {
-                            HStack {
-                                Text("Preview")
-                                    .font(.headline)
-                                
-                                Spacer()
-                                
-                                Button {
-                                    withAnimation {
-                                        showPreview = false
-                                    }
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundStyle(.secondary)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                            .padding()
-                            
-                            Divider()
-                            
-                            ScrollView {
-                                templateService.generateTemplatePreview(template)
-                                    .padding()
-                                    .background(Color.white)
-                                    .cornerRadius(8)
-                                    .shadow(radius: 2)
-                                    .padding()
-                            }
-                            .background(Color.gray.opacity(0.1))
-                        }
-                        .frame(width: geometry.size.width * 0.6)
                     }
                 }
             }
