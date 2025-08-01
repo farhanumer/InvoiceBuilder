@@ -12,11 +12,16 @@ public final class InvoiceTemplateEntity {
     public var primaryColor: String
     public var secondaryColor: String
     public var accentColor: String
+    public var backgroundColor: String
+    public var backgroundType: String
+    public var borderStyle: String
+    public var borderColor: String
     public var fontFamily: String
     public var fontSize: Int
     public var logoPosition: String
     public var headerLayout: String
     public var footerLayout: String
+    public var contentLayout: String
     public var showTaxColumn: Bool
     public var showDiscountColumn: Bool
     public var showNotesSection: Bool
@@ -40,11 +45,16 @@ public final class InvoiceTemplateEntity {
         primaryColor: String = "#000000",
         secondaryColor: String = "#666666",
         accentColor: String = "#007AFF",
+        backgroundColor: String = "#FFFFFF",
+        backgroundType: String = "solid",
+        borderStyle: String = "none",
+        borderColor: String = "#CCCCCC",
         fontFamily: String = "System",
         fontSize: Int = 12,
         logoPosition: String = "top-left",
         headerLayout: String = "standard",
         footerLayout: String = "standard",
+        contentLayout: String = "standard",
         showTaxColumn: Bool = true,
         showDiscountColumn: Bool = false,
         showNotesSection: Bool = true,
@@ -61,11 +71,16 @@ public final class InvoiceTemplateEntity {
         self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor
         self.accentColor = accentColor
+        self.backgroundColor = backgroundColor
+        self.backgroundType = backgroundType
+        self.borderStyle = borderStyle
+        self.borderColor = borderColor
         self.fontFamily = fontFamily
         self.fontSize = fontSize
         self.logoPosition = logoPosition
         self.headerLayout = headerLayout
         self.footerLayout = footerLayout
+        self.contentLayout = contentLayout
         self.showTaxColumn = showTaxColumn
         self.showDiscountColumn = showDiscountColumn
         self.showNotesSection = showNotesSection

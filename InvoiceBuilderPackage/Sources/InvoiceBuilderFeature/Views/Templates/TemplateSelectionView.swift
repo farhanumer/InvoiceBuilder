@@ -23,15 +23,19 @@ public struct TemplateSelectionView: View {
             if selectedCategory != .all {
                 switch selectedCategory {
                 case .professional:
-                    return ["classic", "modern", "executive", "corporate"].contains(template.name)
+                    return TemplateCategory.professional.templates().contains { $0.id == template.id }
                 case .creative:
-                    return ["creative", "colorful", "artistic"].contains(template.name)
+                    return TemplateCategory.creative.templates().contains { $0.id == template.id }
                 case .minimal:
-                    return ["minimal", "clean", "simple"].contains(template.name)
+                    return TemplateCategory.minimal.templates().contains { $0.id == template.id }
                 case .service:
-                    return ["consulting", "freelancer", "agency"].contains(template.name)
+                    return TemplateCategory.service.templates().contains { $0.id == template.id }
                 case .product:
-                    return ["retail", "ecommerce", "wholesale"].contains(template.name)
+                    return TemplateCategory.product.templates().contains { $0.id == template.id }
+                case .themed:
+                    return TemplateCategory.themed.templates().contains { $0.id == template.id }
+                case .enhanced:
+                    return TemplateCategory.enhanced.templates().contains { $0.id == template.id }
                 case .custom:
                     return template.isCustom
                 case .all:
@@ -126,6 +130,9 @@ public struct TemplateSelectionView: View {
                             print("Template duplication not available")
                         }
                     )
+                    #if os(macOS)
+                    .frame(minWidth: 800, minHeight: 600)
+                    #endif
                 }
             }
             .sheet(isPresented: $showingCreateTemplate) {
@@ -383,6 +390,8 @@ private enum TemplateFilterCategory: CaseIterable {
     case minimal
     case service
     case product
+    case themed
+    case enhanced
     case custom
     
     var displayName: String {
@@ -393,6 +402,8 @@ private enum TemplateFilterCategory: CaseIterable {
         case .minimal: return "Minimal"
         case .service: return "Service"
         case .product: return "Product"
+        case .themed: return "Themed"
+        case .enhanced: return "Enhanced"
         case .custom: return "Custom"
         }
     }
@@ -496,6 +507,9 @@ private struct TemplatePreviewView: View {
                 TemplateCustomizationView(template: currentTemplate) { customizedTemplate in
                     currentTemplate = customizedTemplate
                 }
+                #if os(macOS)
+                .frame(minWidth: 900, minHeight: 700)
+                #endif
             }
         }
     }
@@ -558,11 +572,130 @@ private struct TemplatePreviewView: View {
                 .font(.headline)
                 .fontWeight(.semibold)
             
-            Text("Template Preview Coming Soon")
-                .frame(maxWidth: .infinity)
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+            // Create a mock InvoiceTemplateService to generate preview
+            // Since the service is temporarily disabled, we'll show a basic preview
+            VStack(spacing: 16) {
+                // Header preview
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Your Business Name")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(currentTemplate.primaryColorSwiftUI())
+                        
+                        Text("123 Business St, City, State")
+                            .font(.caption)
+                            .foregroundStyle(currentTemplate.secondaryColorSwiftUI())
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text("INVOICE")
+                            .font(.title)
+                            .fontWeight(.heavy)
+                            .foregroundStyle(currentTemplate.accentColorSwiftUI())
+                        
+                        Text("INV-0001")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
+                }
+                .padding()
+                
+                Divider()
+                    .foregroundStyle(currentTemplate.secondaryColorSwiftUI())
+                
+                // Sample invoice items
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Description")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text("Qty")
+                            .fontWeight(.semibold)
+                            .frame(width: 40)
+                        Text("Rate")
+                            .fontWeight(.semibold)
+                            .frame(width: 60, alignment: .trailing)
+                        Text("Amount")
+                            .fontWeight(.semibold)
+                            .frame(width: 70, alignment: .trailing)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(currentTemplate.secondaryColorSwiftUI())
+                    .padding(.horizontal)
+                    .padding(.vertical, 4)
+                    .background(currentTemplate.primaryColorSwiftUI().opacity(0.1))
+                    
+                    HStack {
+                        Text("Consulting Services")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text("10")
+                            .frame(width: 40)
+                        Text("$150")
+                            .frame(width: 60, alignment: .trailing)
+                        Text("$1,500")
+                            .fontWeight(.semibold)
+                            .frame(width: 70, alignment: .trailing)
+                    }
+                    .font(.caption)
+                    .padding(.horizontal)
+                    
+                    HStack {
+                        Text("Design Work")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text("5")
+                            .frame(width: 40)
+                        Text("$120")
+                            .frame(width: 60, alignment: .trailing)
+                        Text("$600")
+                            .fontWeight(.semibold)
+                            .frame(width: 70, alignment: .trailing)
+                    }
+                    .font(.caption)
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+                
+                // Total section
+                VStack(spacing: 4) {
+                    HStack {
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 2) {
+                            HStack {
+                                Text("Subtotal:")
+                                Spacer()
+                                Text("$2,100")
+                            }
+                            if currentTemplate.showTaxColumn {
+                                HStack {
+                                    Text("Tax:")
+                                    Spacer()
+                                    Text("$210")
+                                }
+                            }
+                            Divider()
+                            HStack {
+                                Text("Total:")
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text("$2,310")
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(currentTemplate.accentColorSwiftUI())
+                            }
+                        }
+                        .font(.caption)
+                        .frame(width: 150)
+                    }
+                }
+                .padding()
+            }
+            .frame(height: 400)
+            .background(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
     }
 }
