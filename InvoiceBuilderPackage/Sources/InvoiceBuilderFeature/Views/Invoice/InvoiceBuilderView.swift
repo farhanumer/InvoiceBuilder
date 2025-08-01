@@ -50,9 +50,75 @@ public struct InvoiceBuilderView: View {
     
     public var body: some View {
         NavigationStack {
+            #if os(macOS)
+            // macOS always uses side-by-side layout
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    // Editor pane
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            invoiceDetailsSection
+                            clientSection
+                            itemsSection
+                            calculationsSection
+                            additionalInfoSection
+                        }
+                        .padding()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .background(Color(.controlBackgroundColor))
+                    
+                    Divider()
+                    
+                    // Preview pane
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Preview")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .padding(.horizontal)
+                            
+                            if let client = selectedClient, !invoiceItems.isEmpty,
+                               let businessProfile = businessProfiles.first.map({ BusinessProfile(from: $0) }) {
+                                
+                                let previewInvoice = createPreviewInvoice(client: client)
+                                
+                                templateService.renderInvoicePreview(
+                                    invoice: previewInvoice,
+                                    businessProfile: businessProfile,
+                                    template: selectedTemplate
+                                )
+                                .padding()
+                            } else {
+                                VStack(spacing: 16) {
+                                    Image(systemName: "doc.text")
+                                        .font(.system(size: 48))
+                                        .foregroundStyle(.secondary)
+                                    
+                                    Text("Preview will appear here")
+                                        .font(.headline)
+                                        .foregroundStyle(.secondary)
+                                    
+                                    Text("Add a client and items to see the invoice preview")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .padding()
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .background(Color(.textBackgroundColor))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            #else
+            // iOS uses responsive layout based on screen size
             GeometryReader { geometry in
                 if geometry.size.width > 800 {
-                    // iPad/Mac layout - side by side
+                    // iPad layout - side by side
                     HStack(spacing: 0) {
                         // Editor pane
                         ScrollView {
@@ -64,14 +130,17 @@ public struct InvoiceBuilderView: View {
                                 additionalInfoSection
                             }
                             .padding()
+                            .frame(maxWidth: .infinity)
                         }
                         .frame(width: geometry.size.width * 0.5)
+                        .frame(maxHeight: .infinity)
                         
                         Divider()
                         
                         // Preview pane
                         invoicePreviewSection
                             .frame(width: geometry.size.width * 0.5)
+                            .frame(maxHeight: .infinity)
                     }
                 } else {
                     // iPhone layout - tabs
@@ -86,7 +155,9 @@ public struct InvoiceBuilderView: View {
                                 additionalInfoSection
                             }
                             .padding()
+                            .frame(maxWidth: .infinity)
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .tabItem {
                             Label("Edit", systemImage: "pencil")
                         }
@@ -99,11 +170,13 @@ public struct InvoiceBuilderView: View {
                     }
                 }
             }
-            .navigationTitle(existingInvoice == nil ? "New Invoice" : "Edit Invoice")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
+        }
+        .navigationTitle(existingInvoice == nil ? "New Invoice" : "Edit Invoice")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .toolbar {
                 ToolbarItem(placement: {
                     #if os(iOS)
                     .topBarLeading
@@ -129,9 +202,8 @@ public struct InvoiceBuilderView: View {
                     .disabled(selectedClient == nil || invoiceItems.isEmpty)
                 }
             }
-            .task {
-                await loadInitialData()
-            }
+        .task {
+            await loadInitialData()
         }
         .sheet(isPresented: $showingClientPicker) {
             ClientPickerView(clients: clients.map { Client(from: $0) }) { client in

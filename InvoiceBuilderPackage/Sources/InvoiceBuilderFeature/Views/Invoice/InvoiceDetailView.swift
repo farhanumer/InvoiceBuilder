@@ -98,6 +98,9 @@ public struct InvoiceDetailView: View {
                 invoice = updatedInvoice
                 showingEditView = false
             }
+            #if os(macOS)
+            .frame(minWidth: 1000, minHeight: 700)
+            #endif
         }
         .confirmationDialog(
             "Delete Invoice",

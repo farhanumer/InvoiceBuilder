@@ -3,6 +3,7 @@ import SwiftData
 
 public struct InvoiceListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(SubscriptionService.self) private var subscriptionService
     
     @Query private var invoices: [InvoiceEntity]
     @Query private var businessProfiles: [BusinessProfileEntity]
@@ -11,6 +12,7 @@ public struct InvoiceListView: View {
     @State private var showingNewInvoice = false
     @State private var selectedInvoice: Invoice?
     @State private var showingInvoiceDetail = false
+    @State private var showingSubscriptionPaywall = false
     
     private var filteredInvoices: [Invoice] {
         let allInvoices = invoices.map { Invoice(from: $0) }
@@ -92,7 +94,11 @@ public struct InvoiceListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        showingNewInvoice = true
+                        if SubscriptionLimits.shared.canCreateInvoice(currentInvoiceCount: invoices.count) {
+                            showingNewInvoice = true
+                        } else {
+                            showingSubscriptionPaywall = true
+                        }
                     } label: {
                         Image(systemName: "plus")
                     }
@@ -104,10 +110,18 @@ public struct InvoiceListView: View {
                 // Handle saved invoice
                 showingNewInvoice = false
             }
+            #if os(macOS)
+            .frame(minWidth: 1000, minHeight: 700)
+            #endif
         }
         .sheet(isPresented: $showingInvoiceDetail) {
             if let selectedInvoice = selectedInvoice {
                 InvoiceDetailView(invoice: selectedInvoice)
+            }
+        }
+        .sheet(isPresented: $showingSubscriptionPaywall) {
+            SubscriptionPaywallView {
+                showingSubscriptionPaywall = false
             }
         }
     }

@@ -81,7 +81,9 @@ public struct DashboardView: View {
                     recentActivitySection
                 }
                 .padding()
+                .frame(maxWidth: .infinity)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle("Dashboard")
             .refreshable {
                 // Refresh data
