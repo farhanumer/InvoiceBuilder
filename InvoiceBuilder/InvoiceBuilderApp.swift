@@ -8,6 +8,7 @@ struct InvoiceBuilderApp: App {
     private let dataStack = SwiftDataStack.shared
     private let authService = AuthenticationService.shared
     private let templateService = InvoiceTemplateService.shared
+    private let subscriptionService = SubscriptionService.shared
     
     var body: some Scene {
         WindowGroup {
@@ -15,6 +16,7 @@ struct InvoiceBuilderApp: App {
                 .environment(appState)
                 .environment(authService)
                 .environment(templateService)
+                .environment(subscriptionService)
                 .modelContainer(dataStack.modelContainer)
         }
         #if os(macOS)

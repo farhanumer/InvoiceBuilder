@@ -64,8 +64,11 @@ struct ClientsView: View {
 
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
+    @Environment(SubscriptionService.self) private var subscriptionService
     @State private var showingBusinessProfile = false
     @State private var showingServiceItems = false
+    @State private var showingTemplateSelection = false
+    @State private var showingSubscriptionManagement = false
     
     var body: some View {
         NavigationStack {
@@ -118,6 +121,79 @@ struct SettingsView: View {
                                 .foregroundStyle(.tertiary)
                         }
                     }
+                    
+                    Button {
+                        showingTemplateSelection = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "doc.text.fill")
+                                .foregroundStyle(.purple)
+                                .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Invoice Templates")
+                                    .foregroundStyle(.primary)
+                                Text("Browse and customize invoice templates")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+                
+                Section("Subscription") {
+                    Button {
+                        showingSubscriptionManagement = true
+                    } label: {
+                        HStack {
+                            Image(systemName: subscriptionService.isSubscribed ? "crown.fill" : "crown")
+                                .foregroundStyle(subscriptionService.isSubscribed ? .yellow : .orange)
+                                .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(subscriptionService.isSubscribed ? "InvoiceBuilder Pro" : "Upgrade to Pro")
+                                    .foregroundStyle(.primary)
+                                if subscriptionService.isSubscribed {
+                                    if let subscription = subscriptionService.currentSubscription {
+                                        Text(subscription.subscriptionType == .lifetime ? "Lifetime Access" : "Active until \(subscription.formattedExpirationDate)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    } else {
+                                        Text("Premium features active")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                } else {
+                                    Text("Unlock unlimited invoices and premium features")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            if subscriptionService.isSubscribed {
+                                Text("ACTIVE")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(.green)
+                                    .foregroundStyle(.white)
+                                    .clipShape(Capsule())
+                            } else {
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
                 }
                 
                 Section("Account") {
@@ -145,6 +221,14 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingServiceItems) {
                 ItemsListView()
+            }
+            .sheet(isPresented: $showingTemplateSelection) {
+                TemplateSelectionView { template in
+                    print("Selected template: \(template.displayName)")
+                }
+            }
+            .sheet(isPresented: $showingSubscriptionManagement) {
+                SubscriptionManagementView()
             }
         }
     }

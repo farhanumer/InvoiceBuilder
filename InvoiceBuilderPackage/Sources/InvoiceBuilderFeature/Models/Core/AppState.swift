@@ -3,9 +3,9 @@ import SwiftUI
 @Observable
 @MainActor
 public final class AppState {
-    var isAuthenticated: Bool = false
-    var currentUser: User?
-    var hasCompletedOnboarding: Bool = false
+    var isAuthenticated: Bool = true // Temporarily set to true for testing
+    var currentUser: User? = User(id: "test", name: "Test User", email: "test@example.com") // Test user
+    var hasCompletedOnboarding: Bool = true // Temporarily set to true for testing
     
     public init() {}
     
